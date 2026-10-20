@@ -196,7 +196,7 @@
       </li>
       <li><a href="#wifi">WiFi</a></li>
       <li><a href="#depannage">Dépannage</a></li>
-      <li><a href="#board">Chili board</a></li>
+      <li><a href="#chili-lab">Chili Lab</a></li>
     </ol>
   </aside>
 
@@ -212,7 +212,7 @@
         <li><a href="#commandes">5. Commandes</a></li>
         <li><a href="#wifi">6. WiFi</a></li>
         <li><a href="#depannage">7. Dépannage</a></li>
-        <li><a href="#board">8. Chili board</a></li>
+        <li><a href="#chili-lab">8. Chili Lab</a></li>
       </ol>
     </details>
 
@@ -224,7 +224,7 @@
     <pre class="sh">chili check-port                <span class="cm"># détecte la carte</span>
 chili flash                     <span class="cm"># installe le firmware Chili (une seule fois)</span>
 chili push examples\blink.chl   <span class="cm"># envoie et lance un programme</span></pre>
-    <div class="note"><p>Tu préfères la souris ? Tape <code>chili</code> tout seul (ou menu Démarrer → <strong>Chili board</strong>) : le <a href="#board">tableau de bord</a> fait tout ça avec des boutons.</p></div>
+    <div class="note"><p>Tu préfères la souris ? Installe <a href="#chili-lab">Chili Lab</a>, l'application de bureau : détection de la carte, envoi des programmes, console et firmware, avec des boutons.</p></div>
 
     <!-- ================================================================ -->
     <article id="installation">
@@ -239,7 +239,6 @@ chili push examples\blink.chl   <span class="cm"># envoie et lance un programme<
         <li>Laisse les options cochées, surtout <strong>Ajouter chili au PATH</strong> (c'est ce qui permet de taper <code>chili</code> dans un terminal). L'extension VS Code n'est proposée que si VS Code est installé.</li>
         <li>Clique sur <strong>Installer</strong>, puis <strong>Terminer</strong>.</li>
       </ol>
-      <p>L'installateur crée aussi un raccourci <strong>Chili board</strong> dans le menu Démarrer (le <a href="#board">tableau de bord</a>).</p>
       <p>Chili est installé dans <code>%LOCALAPPDATA%\Programs\Chili</code> : <code>bin\chili.exe</code> et les exemples dans <code>examples\</code>.</p>
 
       <h3>Vérifier</h3>
@@ -263,7 +262,7 @@ chili push examples\blink.chl   <span class="cm"># envoie et lance un programme<
       <div class="kicker">Étape 2</div>
       <h2>Premiers pas : faire clignoter la LED</h2>
       <p class="lead">Brancher l'ESP32, y installer le firmware Chili, puis envoyer un programme qui fait clignoter sa LED bleue. Compte 5 minutes.</p>
-      <div class="note"><p>Cette partie utilise le terminal. Tout se fait aussi à la souris avec <a href="#board">Chili board</a> : il détecte la carte, propose <strong>Installer Chili sur la carte</strong>, puis <strong>Envoyer</strong> à côté de <code>blink.chl</code>.</p></div>
+      <div class="note"><p>Cette partie utilise le terminal. Tout se fait aussi à la souris avec l'application <a href="#chili-lab">Chili Lab</a> : elle détecte la carte, propose <strong>Installer Chili sur la carte</strong>, puis <strong>Envoyer</strong> à côté de <code>blink.chl</code>.</p></div>
 
       <h3 id="pp-brancher">1. Brancher la carte</h3>
       <p>Branche l'ESP32 avec un <strong>câble USB de données</strong>. Beaucoup de câbles (écouteurs, batteries) ne font que <strong>charger</strong> : la carte s'allume mais le PC ne la voit pas. Si rien n'est détecté, change d'abord de câble.</p>
@@ -634,7 +633,7 @@ avant <span class="op">=</span> etat
     <article id="commandes">
       <div class="kicker">Référence</div>
       <h2>Les commandes</h2>
-      <p class="lead">Toutes se tapent dans un terminal : <code>chili &lt;commande&gt; [fichier] [cible]</code>. <code>chili help</code> affiche la liste ; <code>chili</code> tout seul ouvre le <a href="#board">tableau de bord</a>.</p>
+      <p class="lead">Toutes se tapent dans un terminal : <code>chili &lt;commande&gt; [fichier] [cible]</code>. <code>chili help</code> (ou <code>chili</code> seul) affiche la liste. À la souris : <a href="#chili-lab">Chili Lab</a>.</p>
       <p><strong>La cible</strong> (facultative) : un port série (<code>COM4</code>), une adresse IP (<code>192.168.1.42</code>) ou un nom réseau (<code>chili-a1b2c3.local</code>). Sans cible, la carte USB est détectée seule.</p>
 
       <h3 id="cmd-pc">Sur le PC (sans carte)</h3>
@@ -729,7 +728,7 @@ COM4 : programme effacé</pre>
       <ul>
         <li><code>chili wifi &lt;réseau&gt; &lt;mot de passe&gt;</code> connecte la carte au WiFi, <code>chili wifi off</code> le coupe : voir <a href="#wifi">WiFi</a>.</li>
         <li><code>chili version</code> affiche la version de l'outil, du firmware embarqué (celui que <code>flash</code> installe) et du format de bytecode.</li>
-        <li><code>chili help</code> affiche la liste des commandes ; <code>chili board [CIBLE]</code> (ou <code>chili</code> seul) ouvre <a href="#board">Chili board</a>.</li>
+        <li><code>chili help</code> (ou <code>chili</code> tout seul) affiche la liste des commandes.</li>
         <li>Pour les curieux : <code>chili tokens</code> et <code>chili parse</code> montrent les étapes internes du compilateur.</li>
       </ul>
     </article>
@@ -785,12 +784,12 @@ chili stop 192.168.1.42</pre>
 
       <h3>Port occupé</h3>
       <pre class="out">  Port occupé : ferme les autres programmes qui l'utilisent (Arduino IDE, moniteur série…).</pre>
-      <p>Un seul programme à la fois par port. Ferme <strong>Chili board</strong> (ou clique sur Déconnecter), Arduino IDE, PlatformIO, Thonny, PuTTY, ou l'autre terminal où tourne <code>chili monitor</code> (Ctrl+C).</p>
+      <p>Un seul programme à la fois par port. Ferme <strong>Chili Lab</strong> (ou clique sur Déconnecter), Arduino IDE, PlatformIO, Thonny, PuTTY, ou l'autre terminal où tourne <code>chili monitor</code> (Ctrl+C).</p>
 
       <h3>« Aucune carte avec le firmware Chili n'a été trouvée en USB »</h3>
       <ul>
         <li><code>check-port</code> dit <code>Firmware Chili : absent</code> : lance <code>chili flash</code>.</li>
-        <li>Port occupé (Chili board ouvert ?) : voir ci-dessus.</li>
+        <li>Port occupé (Chili Lab ouvert ?) : voir ci-dessus.</li>
         <li>La carte ne répond plus : appuie sur <strong>EN</strong> et réessaie.</li>
       </ul>
 
@@ -831,30 +830,35 @@ COM4 : le firmware de la carte ne connaît pas « kill ». Mets-le à jour avec 
       </ul>
     </article>
     <!-- ================================================================ -->
-    <article id="board">
+    <article id="chili-lab">
       <div class="kicker">À la souris</div>
-      <h2>Chili board : le tableau de bord</h2>
-      <p class="lead">Une fenêtre pour tout faire sans taper de commandes : état de la carte, envoi de programmes, console, mise à jour du firmware, WiFi.</p>
-      <h3>L'ouvrir</h3>
-      <ul>
-        <li>menu Démarrer → <strong>Chili board</strong> (raccourci créé par l'installateur, ouvert sur le dossier des exemples) ;</li>
-        <li>ou dans un terminal : <code>chili</code> tout seul, ou <code>chili board COM4</code> pour viser une carte précise (port, IP ou nom réseau).</li>
-      </ul>
-      <pre class="out">Chili board est ouvert. Ferme la fenêtre pour quitter (ou Ctrl+C ici).</pre>
-      <p>La fenêtre s'ouvre avec Edge ou Chrome en mode application. Sans l'un des deux, le terminal affiche une adresse <code>http://127.0.0.1:…</code> à ouvrir dans ton navigateur.</p>
-      <h3>Ce qu'on y trouve</h3>
+      <h2>Chili Lab : l'application de bureau</h2>
+      <p class="lead">Une application Windows pour tout faire sans terminal : état de la carte, envoi des programmes, console, firmware, WiFi. Elle contient déjà le compilateur et le firmware.</p>
+      <h3>Installer et ouvrir</h3>
+      <ol>
+        <li>Télécharge <strong>ChiliLabSetup-x.y.z.exe</strong> (par exemple <code>ChiliLabSetup-0.1.0.exe</code>) sur <a href="https://github.com/getchili/chili-lab/releases/latest">la page des versions</a>.</li>
+        <li>Double-clique dessus (SmartScreen : <strong>Informations complémentaires</strong> → <strong>Exécuter quand même</strong>). Pas besoin de droits administrateur.</li>
+        <li>Coche <strong>Créer une icône sur le bureau</strong> si tu veux, puis <strong>Installer</strong>. Laisse <strong>Lancer Chili Lab</strong> coché et clique sur <strong>Terminer</strong>.</li>
+      </ol>
+      <p>Ensuite : menu Démarrer → <strong>Chili Lab</strong>, ou double-clic sur l'icône du bureau. Une seule copie tourne à la fois : la relancer ouvre simplement une nouvelle fenêtre.</p>
+      <h3>La fenêtre</h3>
       <div class="tbl"><table>
         <tr><th>Zone</th><th>Ce qu'elle fait</th></tr>
         <tr><td><strong>Carte</strong></td><td>détection automatique (<strong>Relier</strong> / <strong>Déconnecter</strong>), modèle, mémoire libre, firmware, WiFi</td></tr>
         <tr><td><strong>Programme</strong></td><td>état en direct et boutons <strong>Lancer</strong>, <strong>Pause</strong>, <strong>Kill</strong>, <strong>Effacer</strong></td></tr>
-        <tr><td><strong>Fichiers</strong></td><td>les <code>.chl</code> du dossier courant et les exemples : <strong>Vérifier</strong>, <strong>Envoyer</strong> ; ou glisse-dépose un <code>.chl</code> sur la fenêtre</td></tr>
+        <tr><td><strong>Programmes</strong></td><td>tes <code>.chl</code> et les exemples : <strong>Vérifier</strong>, <strong>Envoyer</strong> ; ou glisse-dépose un <code>.chl</code> sur la fenêtre</td></tr>
         <tr><td><strong>Console</strong></td><td>sortie de la carte en direct (<code>print</code>, erreurs)</td></tr>
-        <tr><td><strong>Firmware</strong></td><td><strong>Mettre à jour</strong> en un clic ; <strong>Installer Chili sur la carte</strong> pour une carte neuve</td></tr>
+        <tr><td><strong>Firmware</strong></td><td><strong>Installer Chili sur la carte</strong> (carte neuve), <strong>Mettre à jour</strong> en un clic</td></tr>
         <tr><td><strong>WiFi</strong></td><td><strong>Connecter au WiFi</strong> : nom du réseau et mot de passe</td></tr>
       </table></div>
-      <p>Équivalences : Envoyer = <code>push</code>, Vérifier = <code>check</code>, Lancer = <code>start</code>, Pause = <code>stop</code>, Kill = <code>kill</code>, Effacer = <code>erase</code>, Mettre à jour = <code>flash</code>.</p>
-      <div class="note"><p><strong>Un seul programme à la fois par port USB.</strong> Tant que Chili board est relié à la carte, <code>chili push</code>, <code>chili monitor</code>… dans un terminal disent que le port est occupé : ferme la fenêtre ou clique sur <strong>Déconnecter</strong>.</p></div>
-      <p>Pour voir tes propres programmes dans la liste, lance <code>chili</code> depuis leur dossier (<code>cd "$HOME\Documents\chili"</code> puis <code>chili</code>). Fermer la fenêtre quitte Chili board ; le programme continue sur la carte.</p>
+      <h3>Tes programmes</h3>
+      <ul>
+        <li><strong>Mes programmes</strong> : le dossier <code>Documents\Chili</code>, créé au premier lancement avec une copie des exemples. <strong>Ouvrir</strong> l'affiche dans l'Explorateur (pour créer et modifier tes <code>.chl</code>) ; <strong>Changer</strong> choisit un autre dossier, mémorisé.</li>
+        <li><strong>Exemples</strong> : les exemples fournis avec Chili Lab.</li>
+      </ul>
+      <p>Équivalences : Envoyer = <code>push</code>, Vérifier = <code>check</code>, Lancer = <code>start</code>, Pause = <code>stop</code>, Kill = <code>kill</code>, Effacer = <code>erase</code>, Installer / Mettre à jour = <code>flash</code>.</p>
+      <div class="note"><p><strong>Un seul programme à la fois par port USB.</strong> Tant que Chili Lab est relié à la carte, <code>chili push</code>, <code>chili monitor</code>… dans un terminal disent que le port est occupé : clique sur <strong>Déconnecter</strong> ou ferme Chili Lab.</p></div>
+      <p>Fermer Chili Lab ne coupe pas la carte : le programme continue de tourner. Il faut Microsoft Edge (présent sur Windows 10/11) ou Google Chrome, avec lequel la fenêtre s'affiche.</p>
     </article>
   </main>
 </div>

@@ -110,6 +110,14 @@
   .step p { color: var(--muted); font-size: 14.5px; margin: 0 0 14px; }
   .step code.cmd { display: block; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 13.5px; color: var(--text); overflow-x: auto; white-space: nowrap; }
 
+  /* Chili Lab */
+  .lab { display: flex; align-items: center; gap: 20px; margin-top: 18px; padding: 22px 24px; background: linear-gradient(135deg, rgba(255, 77, 77, .10), rgba(255, 159, 28, .06)); border: 1px solid var(--line); border-radius: var(--radius); }
+  .lab .ic { flex: none; width: 48px; height: 48px; border-radius: 12px; display: grid; place-items: center; font-size: 24px; background: rgba(255, 77, 77, .14); }
+  .lab .txt { flex: 1; min-width: 0; }
+  .lab h3 { font-size: 18px; margin-bottom: 4px; }
+  .lab p { margin: 0; color: var(--muted); font-size: 15px; }
+  .lab .btn { flex: none; }
+
   /* Pipeline */
   .pipe { display: flex; align-items: stretch; gap: 0; flex-wrap: wrap; }
   .pipe .node { flex: 1; min-width: 170px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
@@ -131,6 +139,8 @@
     .hero .wrap { grid-template-columns: 1fr; }
     .grid, .steps { grid-template-columns: repeat(2, 1fr); }
     .lang { grid-template-columns: 1fr; }
+    .lab { flex-wrap: wrap; align-items: flex-start; }
+    .lab .txt { flex-basis: calc(100% - 68px); }
     .pipe .arrow { width: 100%; height: 36px; transform: rotate(90deg); }
   }
   @media (max-width: 600px) {
@@ -233,6 +243,14 @@
       <div class="step"><h3>Branche la carte</h3><p>Chili la détecte et t'affiche le modèle de puce, son état et la marche à suivre.</p><code class="cmd">chili check-port</code></div>
       <div class="step"><h3>Installe le firmware</h3><p>Une seule fois par carte, environ 30 secondes. Le firmware est inclus dans chili.exe.</p><code class="cmd">chili flash</code></div>
       <div class="step"><h3>Envoie ton code</h3><p>Le programme est compilé, envoyé, lancé, et il redémarre tout seul à chaque mise sous tension.</p><code class="cmd">chili push blink.chl</code></div>
+    </div>
+    <div class="lab">
+      <div class="ic">🧪</div>
+      <div class="txt">
+        <h3>Chili Lab, l'application de bureau</h3>
+        <p>Pas envie du terminal ? Chili Lab détecte la carte, installe le firmware, envoie tes programmes et affiche leur sortie, le tout à la souris. Glisse un <code>.chl</code>, c'est parti.</p>
+      </div>
+      <a class="btn ghost" href="https://github.com/getchili/chili-lab/releases/latest">Télécharger Chili Lab</a>
     </div>
   </div>
 </section>
