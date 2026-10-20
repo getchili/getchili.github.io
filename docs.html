@@ -546,6 +546,7 @@ vitesse <span class="op">+=</span> <span class="num">10</span>   <span class="cm
         <tr><td><code>gpio.mode(p, m)</code></td><td>0</td><td>règle la broche <code>p</code> en entrée ou en sortie (mode 0 à 3)</td></tr>
         <tr><td><code>gpio.write(p, v)</code></td><td>0</td><td>sortie à 3,3 V (<code>v</code> non nul) ou à 0 V (<code>v</code> = 0)</td></tr>
         <tr><td><code>gpio.read(p)</code></td><td>0 ou 1</td><td>lit l'état de la broche</td></tr>
+        <tr><td><code>random(min, max)</code></td><td>un nombre</td><td>tire un nombre au hasard entre <code>min</code> et <code>max</code> (bornes comprises)</td></tr>
       </table></div>
 
       <h3 id="nat-temps">print, delay, millis</h3>
@@ -563,6 +564,10 @@ vitesse <span class="op">+=</span> <span class="num">10</span>   <span class="cm
     <span class="bi">delay</span>(<span class="num">10</span>)
 }</pre>
       <p>Le compteur de <code>millis()</code> dépasse la limite des entiers 32 bits au bout d'environ 24 jours : compare toujours une <strong>différence</strong> (<code>millis() - prochain &gt;= 0</code>), qui reste juste au passage de la limite.</p>
+      <h3>Le hasard : <code>random(min, max)</code></h3>
+      <pre><code>let de = random(1, 6)       // 1, 2, 3, 4, 5 ou 6
+delay(random(200, 800))     // une pause imprévisible</code></pre>
+      <p>Sur l'ESP32, le hasard vient du générateur matériel de la puce : vrai aléatoire, sans graine à choisir. Si <code>max</code> est plus petit que <code>min</code>, le programme s'arrête avec une erreur. <code>random</code> demande le firmware 0.1.4 ou plus récent : Chili propose la mise à jour si besoin.</p>
 
       <h3 id="nat-gpio">Broches GPIO</h3>
       <p>Utilise le <strong>numéro GPIO</strong> de la broche (sérigraphié <code>D2</code>, <code>GPIO2</code>, <code>IO2</code> ou <code>2</code>). Appelle <code>gpio.mode</code> une fois au début pour chaque broche.</p>
