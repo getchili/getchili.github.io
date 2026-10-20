@@ -203,6 +203,7 @@
           <li><a href="#nat-temps">print, delay, millis, random</a></li>
           <li><a href="#nat-gpio">Broches GPIO</a></li>
           <li><a href="#nat-exemples">Exemples LED et bouton</a></li>
+          <li><a href="#nat-materiel">PWM, son, servo, ADC, I2C</a></li>
         </ol>
       </li>
       <li><a href="#commandes">Commandes</a>
@@ -267,7 +268,7 @@ chili push examples\blink.chl   <span class="cm"># envoie et lance un programme<
         <li>Tape :</li>
       </ol>
       <pre class="sh">chili version</pre>
-      <pre class="out">chili 0.1.0 (firmware ESP32 embarqué : 0.3.0, bytecode v3)</pre>
+      <pre class="out">chili 0.1.0 (firmware ESP32 embarqué : 0.4.0, bytecode v3)</pre>
       <p>Si tu vois <code>chili : Le terme «chili» n'est pas reconnu…</code>, ouvre un nouveau terminal. Sinon, relance l'installateur avec <strong>Ajouter chili au PATH</strong> coché.</p>
 
       <h3>Mettre à jour, désinstaller</h3>
@@ -312,14 +313,14 @@ COM4 :
       <h3 id="pp-flash">4. Installer le firmware Chili</h3>
       <p>Le firmware est le programme qui reste sur la carte et exécute tes programmes Chili. On l'installe <strong>une fois par carte</strong> (et après chaque mise à jour de Chili).</p>
       <pre class="sh">chili flash</pre>
-      <pre class="out">Installation du firmware Chili 0.3.0 sur COM4.
+      <pre class="out">Installation du firmware Chili 0.4.0 sur COM4.
 Ne débranche pas la carte pendant l'opération.
 
   [##############################] 100 %  firmware.bin
 
 Firmware écrit et vérifié en 28 s. Redémarrage de la carte…
-Firmware Chili 0.3.0 opérationnel sur ESP32-D0WD-V3.</pre>
-      <p>Ta carte a déjà un firmware Chili plus ancien que 0.3.0 ? Relance aussi <code>chili flash</code> : les programmes actuels (texte, tableaux, <code>for</code>) ne tournent pas dessus.</p>
+Firmware Chili 0.4.0 opérationnel sur ESP32-D0WD-V3.</pre>
+      <p>Ta carte a déjà un firmware Chili plus ancien que 0.4.0 ? Relance aussi <code>chili flash</code> : les programmes récents (texte, tableaux, <code>for</code>, PWM, I2C…) ne tournent pas dessus.</p>
       <p>Si la carte « ne passe pas en mode programmation automatiquement » :</p>
       <ol>
         <li>maintiens le bouton <strong>BOOT</strong> enfoncé ;</li>
@@ -356,6 +357,11 @@ Sortie de la carte — Ctrl+C pour quitter (le programme continue de tourner).</
         <tr><td><code>compteur.chl</code></td><td>compter les appuis sur BOOT (détecter un appui, éviter les rebonds)</td></tr>
         <tr><td><code>chrono.chl</code></td><td>plusieurs choses à des rythmes différents avec <code>millis()</code></td></tr>
         <tr><td><code>de.chl</code></td><td>dé électronique : <code>random</code>, la LED clignote de 1 à 6 fois</td></tr>
+        <tr><td><code>respire.chl</code></td><td>la LED s'allume et s'éteint en douceur : <a href="#nat-materiel"><code>pwm.write</code></a></td></tr>
+        <tr><td><code>potentiometre.chl</code></td><td>un potentiomètre règle la luminosité : <a href="#nat-materiel"><code>adc.read</code></a></td></tr>
+        <tr><td><code>buzzer.chl</code></td><td>une mélodie sur un buzzer : <a href="#nat-materiel"><code>pwm.tone</code></a></td></tr>
+        <tr><td><code>servo.chl</code></td><td>un servomoteur balaie de 0 à 180° : <a href="#nat-materiel"><code>servo.write</code></a></td></tr>
+        <tr><td><code>i2c.chl</code></td><td>cherche les modules I2C branchés : <a href="#nat-materiel"><code>i2c.scan</code></a></td></tr>
         <tr><td colspan="2"><strong>Le langage</strong></td></tr>
         <tr><td><code>calculs.chl</code></td><td><strong>PC</strong> — variables, nombres, opérateurs, débordement</td></tr>
         <tr><td><code>conditions.chl</code></td><td><strong>PC</strong> — <code>if</code> / <code>else</code>, comparaisons, <code>&amp;&amp;</code> <code>||</code> <code>!</code></td></tr>
@@ -892,6 +898,7 @@ vitesse <span class="op">+=</span> <span class="num">10</span>   <span class="cm
         <tr><td><code>printc(code)</code></td><td>0</td><td>affiche un caractère (65 = <code>A</code>, 97 = <code>a</code>…), sans retour à la ligne</td></tr>
         <tr><td><code>println()</code></td><td>0</td><td>termine la ligne</td></tr>
         <tr><td><code>str.sub</code>, <code>str.find</code>, <code>str.char</code>, <code>str.int</code></td><td>texte / nombre</td><td>fonctions de texte : voir <a href="#tx-texte">Le texte</a></td></tr>
+        <tr><td><code>pwm.*</code>, <code>servo.write</code>, <code>adc.*</code>, <code>i2c.*</code></td><td></td><td>luminosité, son, servos, capteurs, I2C : voir <a href="#nat-materiel">plus bas</a></td></tr>
       </table></div>
 
       <h3 id="nat-temps">print, delay, millis</h3>
@@ -982,6 +989,56 @@ vitesse <span class="op">+=</span> <span class="num">10</span>   <span class="cm
 avant <span class="op">=</span> etat
 <span class="bi">delay</span>(<span class="num">20</span>)   <span class="cm">// évite de compter les rebonds du bouton</span></pre>
       <p>Avec <code>chili run</code>, les broches sont simulées : <code>gpio.write</code> affiche <code>[gpio] broche 2 = 1</code> et <code>gpio.read</code> renvoie la dernière valeur écrite (0 au départ).</p>
+
+      <h3 id="nat-materiel">Luminosité, son, servos, capteurs et I2C</h3>
+      <div class="note"><p>Ces fonctions demandent le <strong>firmware 0.4.0</strong> : <code>chili flash</code>, ou le bandeau orange de Chili Lab.</p></div>
+      <div class="tbl"><table>
+        <tr><th>Fonction</th><th>Renvoie</th><th>Effet</th></tr>
+        <tr><td><code>pwm.write(broche, v)</code></td><td>0</td><td>luminosité / puissance de 0 (éteint) à 255 (à fond)</td></tr>
+        <tr><td><code>pwm.tone(broche, hz)</code></td><td>0</td><td>joue un son de <code>hz</code> hertz (20 à 20 000) ; 0 = silence</td></tr>
+        <tr><td><code>servo.write(broche, a)</code></td><td>0</td><td>place un servomoteur à l'angle <code>a</code> (0 à 180°)</td></tr>
+        <tr><td><code>adc.read(broche)</code></td><td>0 à 4095</td><td>mesure la tension d'une entrée analogique (0 à 3,3 V)</td></tr>
+        <tr><td><code>adc.mv(broche)</code></td><td>mV</td><td>la même mesure, en millivolts</td></tr>
+        <tr><td><code>i2c.begin(sda, scl)</code></td><td>0</td><td>broches du bus I2C (par défaut SDA 21, SCL 22)</td></tr>
+        <tr><td><code>i2c.scan()</code></td><td>tableau</td><td>adresses des modules I2C qui répondent</td></tr>
+        <tr><td><code>i2c.write(adr, données)</code></td><td>1 ou 0</td><td>envoie un tableau d'octets ou un texte ; 1 si le module a répondu</td></tr>
+        <tr><td><code>i2c.read(adr, n)</code></td><td>tableau</td><td>lit <code>n</code> octets (128 au plus)</td></tr>
+      </table></div>
+
+      <h4>Luminosité et son (<code>respire.chl</code>, <code>buzzer.chl</code>)</h4>
+<pre><span class="mod">pwm</span>.<span class="nat">write</span>(<span class="num">2</span>, <span class="num">64</span>)       <span class="cm">// LED à un quart de sa luminosité</span>
+<span class="mod">pwm</span>.<span class="nat">tone</span>(<span class="num">25</span>, <span class="num">440</span>)     <span class="cm">// un la sur un buzzer passif</span>
+<span class="bi">delay</span>(<span class="num">500</span>)
+<span class="mod">pwm</span>.<span class="nat">tone</span>(<span class="num">25</span>, <span class="num">0</span>)       <span class="cm">// silence</span></pre>
+      <p>La broche s'allume et s'éteint 5 000 fois par seconde : la part du temps allumée règle la luminosité (c'est la <strong>PWM</strong>). Pas besoin de <code>gpio.mode</code> avant. 8 broches au plus en PWM en même temps (son et servos compris) ; pour revenir à <code>gpio.write</code>, appelle d'abord <code>gpio.mode</code>.</p>
+
+      <h4>Servomoteur (<code>servo.chl</code>)</h4>
+<pre><span class="mod">servo</span>.<span class="nat">write</span>(<span class="num">13</span>, <span class="num">90</span>)    <span class="cm">// au milieu ; 0 = tout à gauche, 180 = tout à droite</span></pre>
+      <p>Servo type SG90 : fil <strong>orange</strong> sur la broche, <strong>rouge</strong> sur 5V (VIN), <strong>marron</strong> sur GND.</p>
+
+      <h4>Entrée analogique (<code>potentiometre.chl</code>)</h4>
+<pre><span class="lt">let</span> valeur <span class="op">=</span> <span class="mod">adc</span>.<span class="nat">read</span>(<span class="num">34</span>)          <span class="cm">// 0 à 4095</span>
+<span class="mod">pwm</span>.<span class="nat">write</span>(<span class="num">2</span>, valeur <span class="op">*</span> <span class="num">255</span> <span class="op">/</span> <span class="num">4095</span>)  <span class="cm">// le potentiomètre règle la LED</span>
+<span class="bi">print</span>(<span class="mod">adc</span>.<span class="nat">mv</span>(<span class="num">34</span>) <span class="op">+</span> <span class="str">" mV"</span>)</pre>
+      <p>Utilise les broches <strong>32 à 39</strong> : elles marchent toujours. Les broches 0, 2, 4, 12 à 15 et 25 à 27 ne mesurent que si le WiFi est coupé. Une broche reliée à rien donne une valeur au hasard.</p>
+
+      <h4>Bus I2C : écrans et capteurs (<code>i2c.chl</code>)</h4>
+<pre><span class="kc">for</span> adresse <span class="kc">in</span> <span class="mod">i2c</span>.<span class="nat">scan</span>() {
+    <span class="bi">print</span>(adresse)                <span class="cm">// 60 pour un écran OLED en 0x3C</span>
+}
+<span class="mod">i2c</span>.<span class="nat">write</span>(<span class="num">0x76</span>, [<span class="num">0xD0</span>])          <span class="cm">// numéro du registre à lire</span>
+<span class="lt">let</span> id <span class="op">=</span> <span class="mod">i2c</span>.<span class="nat">read</span>(<span class="num">0x76</span>, <span class="num">1</span>)       <span class="cm">// [0x60] pour un capteur BME280</span></pre>
+      <p>Branchement par défaut : <strong>SDA → GPIO 21</strong>, <strong>SCL → GPIO 22</strong>, VCC → 3V3, GND → GND. Ce qu'il faut envoyer à un module est décrit dans sa fiche technique.</p>
+      <p>Sur le PC, tout est simulé : <code>[pwm] broche 2 = 64/255</code>, <code>adc.read</code> monte et descend toute seule, aucun module I2C ne répond.</p>
+      <div class="tbl err"><table>
+        <tr><th>Message</th><th>Cause</th></tr>
+        <tr><td><code>pwm.write : valeur 300 hors de 0..255</code></td><td>la luminosité va de 0 à 255</td></tr>
+        <tr><td><code>servo.write : angle 200 hors de 0..180</code></td><td>l'angle va de 0 à 180</td></tr>
+        <tr><td><code>adc.read : la broche 5 n'a pas d'entree analogique (utilise 32 a 39)</code></td><td>broche sans entrée analogique</td></tr>
+        <tr><td><code>adc.read : la broche 4 ne marche pas avec le WiFi actif (utilise 32 a 39)</code></td><td>broches 0, 2, 4, 12 à 15, 25 à 27 avec le WiFi</td></tr>
+        <tr><td><code>native n.13 inconnue de ce firmware : mets-le a jour avec chili flash</code></td><td>firmware plus ancien que 0.4.0</td></tr>
+        <tr><td><code>gpio.mode : la broche 1 sert au port USB (TX), l'utiliser couperait la liaison avec le PC</code></td><td>broches 1 et 3 (port USB) et 6 à 11 (mémoire flash) : choisis-en une autre</td></tr>
+      </table></div>
     </article>
 
     <!-- ================================================================ -->
@@ -1032,7 +1089,7 @@ fib(20) = 6765 en 7 ms</pre>
   COM4     WCH CH340 (1A86:7523)  &lt;- carte ESP32 probable
 
 COM4 :
-  Firmware Chili : 0.3.0 (bytecode v3)
+  Firmware Chili : 0.4.0 (bytecode v3)
   Puce           : ESP32-D0WD-V3, 251 Ko de mémoire libre
   WiFi           : non configuré (chili wifi &lt;réseau&gt; &lt;mot de passe&gt;)
   Programme      : 188 octets (crc 5e0c1f3a)
@@ -1173,13 +1230,13 @@ chili stop 192.168.1.42</pre>
 
       <h3>Firmware à mettre à jour</h3>
       <pre class="out">  Firmware Chili : 0.2.1 (bytecode v2)
-                   une autre version (0.3.0) est disponible : chili flash
+                   une autre version (0.4.0) est disponible : chili flash
 
 COM4 : le firmware gère le bytecode v2, ce compilateur produit la v3.
 Mets le firmware à jour avec : chili flash
 
 COM4 : le firmware de la carte ne connaît pas « kill ». Mets-le à jour avec : chili flash</pre>
-      <p>Après une mise à jour de Chili : <code>chili flash</code> par USB (ou le bandeau orange <strong>Mettre à jour</strong> de Chili Lab), puis renvoie ton programme. Obligatoire pour passer au firmware 0.3.0 : un programme compilé par la nouvelle version ne tourne pas sur un firmware plus ancien.</p>
+      <p>Après une mise à jour de Chili : <code>chili flash</code> par USB (ou le bandeau orange <strong>Mettre à jour</strong> de Chili Lab), puis renvoie ton programme. Obligatoire après chaque nouvelle version du firmware : un programme compilé par la nouvelle version ne tourne pas sur un firmware plus ancien.</p>
 
       <h3>Autres cas</h3>
       <ul>
