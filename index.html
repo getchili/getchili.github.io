@@ -86,6 +86,7 @@
   .bool { color: #c77dff; font-weight: 600; }
   .cm { color: #7f9172; font-style: italic; }
   .op { color: #ff8c69; }
+  .str { color: #9ad1ff; }
   .ps { color: #5fd068; }                            /* invite terminal */
   .dim { color: var(--muted); }
   .ok { color: var(--green); }
@@ -261,7 +262,7 @@
   <div class="wrap">
     <div class="kicker">Le langage</div>
     <h2>Simple à lire, rapide à écrire.</h2>
-    <p class="sub">Une syntaxe à accolades sans points-virgules, des entiers 32 bits, des fonctions, des boucles et des classes. Juste ce qu'il faut pour piloter du matériel.</p>
+    <p class="sub">Une syntaxe à accolades sans points-virgules, des entiers 32 bits, du texte, des tableaux, des fonctions, des boucles et des classes. Juste ce qu'il faut pour piloter du matériel.</p>
     <div class="lang">
       <div class="window"><h3>Classes et objets</h3>
 <pre><span class="fn">class</span> <span class="nm">Led</span> {
@@ -278,14 +279,14 @@
         <span class="mod">gpio</span>.<span class="nat">write</span>(<span class="lt">this</span>.broche, <span class="num">0</span>)
     }
 }</pre></div>
-      <div class="window"><h3>Boucles et conditions</h3>
-<pre><span class="lt">let</span> total <span class="op">=</span> <span class="num">0</span>
-<span class="lt">let</span> i <span class="op">=</span> <span class="num">0</span>
-<span class="kc">while</span> i <span class="op">&lt;</span> <span class="num">10</span> {
-    i <span class="op">+=</span> <span class="num">1</span>
-    <span class="kc">if</span> i <span class="op">%</span> <span class="num">2</span> <span class="op">==</span> <span class="num">0</span> { <span class="kf">continue</span> }
-    total <span class="op">+=</span> i
-}</pre></div>
+      <div class="window"><h3>Texte, tableaux et boucles</h3>
+<pre><span class="lt">let</span> notes <span class="op">=</span> [<span class="num">262</span>, <span class="num">294</span>, <span class="num">330</span>]
+<span class="lt">let</span> total <span class="op">=</span> <span class="num">0</span>
+<span class="kc">for</span> n <span class="kc">in</span> notes {
+    <span class="kc">if</span> n <span class="op">&gt;</span> <span class="num">300</span> { <span class="kf">continue</span> }
+    total <span class="op">+=</span> n
+}
+<span class="bi">print</span>(<span class="str">"total : "</span> <span class="op">+</span> total)</pre></div>
       <div class="window"><h3>Matériel</h3>
 <pre><span class="mod">gpio</span>.<span class="nat">mode</span>(<span class="num">4</span>, <span class="num">2</span>)  <span class="cm">// bouton</span>
 <span class="kc">if</span> <span class="mod">gpio</span>.<span class="nat">read</span>(<span class="num">4</span>) <span class="op">==</span> <span class="num">0</span> {

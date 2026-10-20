@@ -95,6 +95,7 @@
   .bool { color: #c77dff; font-weight: 600; }
   .cm { color: #7f9172; font-style: italic; }
   .op { color: #ff8c69; }
+  .str { color: #9ad1ff; }
 
   .tbl { overflow-x: auto; margin: 0 0 20px; border: 1px solid var(--line); border-radius: 12px; }
   table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
@@ -175,9 +176,17 @@
           <li><a href="#lg-variables">Variables</a></li>
           <li><a href="#lg-operateurs">Opérateurs</a></li>
           <li><a href="#lg-if">if / else</a></li>
-          <li><a href="#lg-while">while, break, continue</a></li>
+          <li><a href="#lg-while">while, for, break, continue</a></li>
           <li><a href="#lg-fonctions">Fonctions</a></li>
           <li><a href="#lg-erreurs">Erreurs fréquentes</a></li>
+        </ol>
+      </li>
+      <li><a href="#textes">Textes, tableaux, for</a>
+        <ol>
+          <li><a href="#tx-texte">Le texte</a></li>
+          <li><a href="#tx-tableaux">Les tableaux</a></li>
+          <li><a href="#tx-for">La boucle for</a></li>
+          <li><a href="#tx-erreurs">Erreurs fréquentes</a></li>
         </ol>
       </li>
       <li><a href="#classes">Classes</a>
@@ -217,12 +226,13 @@
         <li><a href="#premiers-pas">2. Premiers pas</a></li>
         <li><a href="#langage">3. Le langage</a></li>
         <li><a href="#lg-erreurs">&nbsp;&nbsp;&nbsp;Erreurs fréquentes</a></li>
-        <li><a href="#classes">4. Classes</a></li>
-        <li><a href="#natives">5. Fonctions natives</a></li>
-        <li><a href="#commandes">6. Commandes</a></li>
-        <li><a href="#wifi">7. WiFi</a></li>
-        <li><a href="#depannage">8. Dépannage</a></li>
-        <li><a href="#chili-lab">9. Chili Lab</a></li>
+        <li><a href="#textes">4. Textes, tableaux, for</a></li>
+        <li><a href="#classes">5. Classes</a></li>
+        <li><a href="#natives">6. Fonctions natives</a></li>
+        <li><a href="#commandes">7. Commandes</a></li>
+        <li><a href="#wifi">8. WiFi</a></li>
+        <li><a href="#depannage">9. Dépannage</a></li>
+        <li><a href="#chili-lab">10. Chili Lab</a></li>
       </ol>
     </details>
 
@@ -257,7 +267,7 @@ chili push examples\blink.chl   <span class="cm"># envoie et lance un programme<
         <li>Tape :</li>
       </ol>
       <pre class="sh">chili version</pre>
-      <pre class="out">chili 0.1.0 (firmware ESP32 embarqué : 0.2.0, bytecode v2)</pre>
+      <pre class="out">chili 0.1.0 (firmware ESP32 embarqué : 0.3.0, bytecode v3)</pre>
       <p>Si tu vois <code>chili : Le terme «chili» n'est pas reconnu…</code>, ouvre un nouveau terminal. Sinon, relance l'installateur avec <strong>Ajouter chili au PATH</strong> coché.</p>
 
       <h3>Mettre à jour, désinstaller</h3>
@@ -302,14 +312,14 @@ COM4 :
       <h3 id="pp-flash">4. Installer le firmware Chili</h3>
       <p>Le firmware est le programme qui reste sur la carte et exécute tes programmes Chili. On l'installe <strong>une fois par carte</strong> (et après chaque mise à jour de Chili).</p>
       <pre class="sh">chili flash</pre>
-      <pre class="out">Installation du firmware Chili 0.2.0 sur COM4.
+      <pre class="out">Installation du firmware Chili 0.3.0 sur COM4.
 Ne débranche pas la carte pendant l'opération.
 
   [##############################] 100 %  firmware.bin
 
 Firmware écrit et vérifié en 28 s. Redémarrage de la carte…
-Firmware Chili 0.2.0 opérationnel sur ESP32-D0WD-V3.</pre>
-      <p>Ta carte a déjà un firmware Chili plus ancien que 0.2.0 ? Relance aussi <code>chili flash</code> : les programmes actuels (<code>class Main</code>, <code>function</code>) ne tournent pas dessus.</p>
+Firmware Chili 0.3.0 opérationnel sur ESP32-D0WD-V3.</pre>
+      <p>Ta carte a déjà un firmware Chili plus ancien que 0.3.0 ? Relance aussi <code>chili flash</code> : les programmes actuels (texte, tableaux, <code>for</code>) ne tournent pas dessus.</p>
       <p>Si la carte « ne passe pas en mode programmation automatiquement » :</p>
       <ol>
         <li>maintiens le bouton <strong>BOOT</strong> enfoncé ;</li>
@@ -343,6 +353,7 @@ Sortie de la carte — Ctrl+C pour quitter (le programme continue de tourner).</
         <tr><td><code>bouton.chl</code></td><td>allume la LED tant qu'on appuie sur le bouton <strong>BOOT</strong> (GPIO 0)</td></tr>
         <tr><td><code>compteur.chl</code></td><td>compte les appuis sur BOOT et affiche le total avec <code>print</code></td></tr>
         <tr><td><code>sos.chl</code></td><td>« SOS » en morse sur la LED, découpé en fonctions</td></tr>
+        <tr><td><code>morse.chl</code></td><td>n'importe quel message en morse, avec du <a href="#textes">texte, un tableau et for</a></td></tr>
         <tr><td><code>de.chl</code></td><td>dé électronique : un appui sur BOOT, la LED clignote de 1 à 6 fois (<code>random</code>)</td></tr>
         <tr><td><code>motifs.chl</code></td><td>motifs de clignotement tirés au hasard, écrits avec des <a href="#classes">classes</a></td></tr>
         <tr><td><code>fib.chl</code></td><td>suite de Fibonacci et mesure du temps de calcul</td></tr>
@@ -354,7 +365,7 @@ Sortie de la carte — Ctrl+C pour quitter (le programme continue de tourner).</
     <article id="langage">
       <div class="kicker">Référence</div>
       <h2>Le langage</h2>
-      <p class="lead">Chili est volontairement petit : des entiers, des variables, des fonctions, des conditions, des boucles et des <a href="#classes">classes</a>.</p>
+      <p class="lead">Chili est volontairement petit : des entiers, du <a href="#textes">texte</a>, des <a href="#textes">tableaux</a>, des variables, des fonctions, des conditions, des boucles et des <a href="#classes">classes</a>.</p>
       <p>Pour tester sans carte :</p>
       <pre class="sh">chili check mon_programme.chl   <span class="cm"># vérifie qu'il n'y a pas d'erreur</span>
 chili run mon_programme.chl     <span class="cm"># l'exécute sur le PC (broches simulées)</span></pre>
@@ -403,7 +414,7 @@ chili run mon_programme.chl     <span class="cm"># l'exécute sur le PC (broches
       <p>Pourquoi : Chili ajoute un point-virgule invisible en fin de ligne quand elle se termine par un nom, un nombre, <code>)</code> ou <code>}</code>. <code>if x &gt; 0</code> suivi d'un retour à la ligne devient <code>if x &gt; 0;</code>.</p>
 
       <h3 id="lg-nombres">Nombres</h3>
-      <p>Une seule sorte de valeur : l'<strong>entier signé 32 bits</strong>, de <strong>-2 147 483 648</strong> à <strong>2 147 483 647</strong>. Pas de nombres à virgule ni de texte pour l'instant. Les objets (voir <a href="#classes">Classes</a>) se rangent eux aussi dans des variables.</p>
+      <p>Les nombres sont des <strong>entiers signés 32 bits</strong>, de <strong>-2 147 483 648</strong> à <strong>2 147 483 647</strong>. Pas de nombres à virgule pour l'instant. Une variable peut aussi contenir du texte, un tableau (voir <a href="#textes">Textes, tableaux et for</a>) ou un objet (voir <a href="#classes">Classes</a>), sans rien déclarer à l'avance.</p>
       <div class="tbl"><table>
         <tr><th>Écriture</th><th>Valeur</th><th>Remarque</th></tr>
         <tr><td><code>42</code></td><td>42</td><td>décimal</td></tr>
@@ -416,7 +427,7 @@ chili run mon_programme.chl     <span class="cm"># l'exécute sur le PC (broches
         <li><strong>Débordement</strong> : les calculs font le tour, <code>2147483647 + 1</code> donne <code>-2147483648</code>.</li>
         <li><strong>Division entière</strong> : <code>7 / 2</code> vaut <code>3</code>, <code>-7 / 2</code> vaut <code>-3</code>, <code>-7 % 2</code> vaut <code>-1</code>.</li>
         <li><strong>Division par zéro</strong> : erreur d'exécution, le programme s'arrête (pas la carte).</li>
-        <li><strong>Vrai / faux</strong> : <code>0</code> est faux, toute autre valeur est vraie. Les comparaisons renvoient <code>1</code> ou <code>0</code>.</li>
+        <li><strong>Vrai / faux</strong> : <code>0</code> est faux, tout autre nombre est vrai (un texte, un tableau ou un objet aussi). Les comparaisons renvoient <code>1</code> ou <code>0</code>.</li>
       </ul>
 
       <h3 id="lg-variables">Variables</h3>
@@ -447,7 +458,7 @@ vitesse <span class="op">+=</span> <span class="num">10</span>   <span class="cm
         <span class="bi">print</span>(compte)       <span class="cm">// 1</span>
     }
 }</pre>
-      <p><strong>Noms</strong> : une lettre ou <code>_</code>, puis lettres, chiffres ou <code>_</code>, sans accents (classes avec une majuscule par habitude). Interdits : les mots-clés (<code>function let if else while return break continue true false class abstract extends constructor this super new</code>) et les natives (<code>print</code>, <code>delay</code>, <code>millis</code>, <code>random</code>, <code>gpio</code>).</p>
+      <p><strong>Noms</strong> : une lettre ou <code>_</code>, puis lettres, chiffres ou <code>_</code>, sans accents (classes avec une majuscule par habitude). Interdits : les mots-clés (<code>function let if else while for in return break continue true false class abstract extends constructor this super new</code>) et les fonctions fournies (<code>print</code>, <code>printc</code>, <code>println</code>, <code>delay</code>, <code>millis</code>, <code>random</code>, <code>len</code>, <code>array</code>, <code>gpio</code>, <code>str</code>).</p>
 
       <h3 id="lg-operateurs">Opérateurs</h3>
       <p>Du plus prioritaire au moins prioritaire :</p>
@@ -481,8 +492,8 @@ vitesse <span class="op">+=</span> <span class="num">10</span>   <span class="cm
 }</pre>
       <p>Pas besoin de parenthèses autour de la condition (elles sont permises). Les accolades sont obligatoires.</p>
 
-      <h3 id="lg-while">Boucles : while, break, continue</h3>
-      <p>Une seule boucle, <code>while</code> (pas de <code>for</code>). <code>break</code> sort de la boucle, <code>continue</code> passe au tour suivant.</p>
+      <h3 id="lg-while">Boucles : while, for, break, continue</h3>
+      <p><code>while</code> répète tant qu'une condition est vraie ; <code>for</code> compte ou parcourt une liste (<code>for i in 0..10 { … }</code>, voir <a href="#tx-for">la boucle for</a>). <code>break</code> sort de la boucle, <code>continue</code> passe au tour suivant.</p>
 <pre><span class="lt">let</span> i <span class="op">=</span> <span class="num">0</span>
 <span class="kc">while</span> <span class="bool">true</span> {
     i <span class="op">+=</span> <span class="num">1</span>
@@ -545,9 +556,9 @@ vitesse <span class="op">+=</span> <span class="num">10</span>   <span class="cm
         <tr><td><code>')' attendu, trouvé fin de ligne</code></td><td>ferme la parenthèse</td></tr>
         <tr><td><code>'}' attendu, trouvé fin de fichier</code></td><td>ajoute l'accolade fermante oubliée</td></tr>
         <tr><td><code>fin d'instruction attendue, trouvé identifiant 'print'</code></td><td>deux instructions sur une ligne : va à la ligne ou sépare par <code>;</code></td></tr>
-        <tr><td><code>caractère inattendu '"'</code></td><td>pas encore de texte : <code>print</code> n'affiche que des nombres</td></tr>
-        <tr><td><code>on ne peut affecter qu'une variable ou un champ (this.champ)</code></td><td>à gauche de <code>=</code>, un nom de variable ou <code>this.champ</code></td></tr>
-        <tr><td><code>expression inutilisée : seul un appel (fonction, méthode, new) peut servir d'instruction</code></td><td>souvent un <code>for</code> : utilise <code>while</code></td></tr>
+        <tr><td><code>chaîne non terminée : il manque le " final</code></td><td>ferme le texte sur la même ligne (<a href="#tx-erreurs">erreurs de texte</a>)</td></tr>
+        <tr><td><code>on ne peut affecter qu'une variable, un champ (this.champ) ou une case (t[i])</code></td><td>à gauche de <code>=</code>, un nom de variable, <code>this.champ</code> ou <code>t[i]</code></td></tr>
+        <tr><td><code>expression inutilisée : seul un appel (fonction, méthode, new) peut servir d'instruction</code></td><td>un calcul seul sur une ligne (<code>x + 1</code>) : range le résultat, <code>x = x + 1</code></td></tr>
       </table></div>
 
       <h4 id="lg-execution">Erreurs d'exécution</h4>
@@ -563,7 +574,114 @@ vitesse <span class="op">+=</span> <span class="num">10</span>   <span class="cm
         <tr><td><code>gpio.mode : la broche 34 ne peut pas etre une sortie</code></td><td>broches 34 à 39 : entrée seulement</td></tr>
         <tr><td><code>gpio.mode : mode 4 inconnu (0 a 3)</code></td><td>mode autre que 0, 1, 2, 3</td></tr>
         <tr><td><code>appel de allume() sur une valeur qui n'est pas un objet</code></td><td>méthode appelée sur <code>0</code> : objet jamais créé (<a href="#classes">Classes</a>)</td></tr>
-        <tr><td><code>memoire des objets pleine</code></td><td>trop d'objets gardés en même temps (<a href="#classes">Classes</a>)</td></tr>
+        <tr><td><code>memoire des objets pleine</code></td><td>trop d'objets, de textes ou de tableaux gardés en même temps (<a href="#tx-memoire">Mémoire</a>)</td></tr>
+        <tr><td><code>indice 3 hors limites (taille 3)</code></td><td>case de tableau inexistante (<a href="#tx-erreurs">erreurs de texte et de tableaux</a>)</td></tr>
+      </table></div>
+    </article>
+
+    <!-- ================================================================ -->
+    <article id="textes">
+      <div class="kicker">Référence</div>
+      <h2>Textes, tableaux et boucle for</h2>
+      <p class="lead">Depuis le firmware 0.3.0, Chili manipule du <strong>texte</strong>, des <strong>listes de valeurs</strong> (les tableaux) et les parcourt avec <code>for</code>.</p>
+      <div class="note"><p>Ces programmes demandent le <strong>firmware 0.3.0</strong> : si <code>chili push</code> signale un firmware trop ancien, lance <code>chili flash</code> (ou le bandeau orange de Chili Lab).</p></div>
+
+      <h3 id="tx-texte">Le texte</h3>
+      <p>Un texte s'écrit entre guillemets droits. <code>+</code> colle deux textes ; un nombre collé à un texte est converti en texte.</p>
+<pre><span class="fn">class</span> <span class="nm">Main</span> {
+    <span class="fn">function</span> <span class="nm">main</span>() {
+        <span class="lt">let</span> nom <span class="op">=</span> <span class="str">"Chili"</span>
+        <span class="bi">print</span>(<span class="str">"Bonjour "</span> <span class="op">+</span> nom <span class="op">+</span> <span class="str">" !"</span>)     <span class="cm">// Bonjour Chili !</span>
+        <span class="lt">let</span> t <span class="op">=</span> <span class="num">23</span>
+        <span class="bi">print</span>(<span class="str">"Température : "</span> <span class="op">+</span> t <span class="op">+</span> <span class="str">" °C"</span>)
+        <span class="bi">print</span>(<span class="str">"total = "</span> <span class="op">+</span> (<span class="num">2</span> <span class="op">+</span> <span class="num">3</span>))         <span class="cm">// total = 5</span>
+        <span class="bi">print</span>(<span class="str">"total = "</span> <span class="op">+</span> <span class="num">2</span> <span class="op">+</span> <span class="num">3</span>)           <span class="cm">// total = 23 (!)</span>
+    }
+}</pre>
+      <p>Chili calcule de gauche à droite : dans le dernier cas, <code>"total = " + 2</code> est déjà du texte. Mets des parenthèses autour des calculs.</p>
+      <div class="tbl"><table>
+        <tr><th>Écriture</th><th>Résultat</th></tr>
+        <tr><td><code>len("salut")</code></td><td>5 : la longueur</td></tr>
+        <tr><td><code>"salut"[0]</code></td><td>115 : le <strong>code</strong> de la 1<sup>re</sup> lettre (65 = <code>A</code>, 97 = <code>a</code>, 32 = espace)</td></tr>
+        <tr><td><code>a == b</code></td><td>1 si les deux textes sont identiques</td></tr>
+        <tr><td><code>"abc" &lt; "abd"</code></td><td>1 : ordre alphabétique</td></tr>
+        <tr><td><code>\n</code> <code>\t</code> <code>\"</code> <code>\\</code> <code>\u{e9}</code></td><td>retour à la ligne, tabulation, guillemet, barre, caractère Unicode (ici <code>é</code>)</td></tr>
+      </table></div>
+      <ul>
+        <li>Les accents s'écrivent directement (<code>"été"</code>), mais <code>len</code> et <code>[i]</code> comptent les <strong>octets</strong> : <code>len("été")</code> vaut 5.</li>
+        <li>Un texte ne se modifie pas (<code>mot[0] = 83</code> est une erreur) : on en fabrique un nouveau.</li>
+        <li>Un texte tient sur une seule ligne ; pour aller à la ligne, écris <code>\n</code>.</li>
+      </ul>
+      <div class="tbl"><table>
+        <tr><th>Fonction</th><th>Renvoie</th><th>Exemple</th></tr>
+        <tr><td><code>str.sub(t, debut, fin)</code></td><td>le morceau de <code>debut</code> (inclus) à <code>fin</code> (exclu)</td><td><code>str.sub("bonjour", 0, 3)</code> → <code>"bon"</code></td></tr>
+        <tr><td><code>str.find(t, motif)</code></td><td>la position de <code>motif</code>, ou -1</td><td><code>str.find("bonjour", "jour")</code> → 3</td></tr>
+        <tr><td><code>str.char(code)</code></td><td>le caractère de ce code</td><td><code>str.char(65)</code> → <code>"A"</code></td></tr>
+        <tr><td><code>str.int(t)</code></td><td>le nombre écrit dans <code>t</code> (0 sinon)</td><td><code>str.int("42") + 1</code> → 43</td></tr>
+      </table></div>
+
+      <h3 id="tx-tableaux">Les tableaux</h3>
+      <p>Un tableau est une liste de valeurs numérotées à partir de 0.</p>
+<pre><span class="lt">let</span> notes <span class="op">=</span> [<span class="num">262</span>, <span class="num">294</span>, <span class="num">330</span>, <span class="num">349</span>]
+
+<span class="fn">class</span> <span class="nm">Main</span> {
+    <span class="fn">function</span> <span class="nm">main</span>() {
+        <span class="bi">print</span>(notes[<span class="num">0</span>])        <span class="cm">// 262</span>
+        <span class="bi">print</span>(<span class="bi">len</span>(notes))      <span class="cm">// 4</span>
+        notes[<span class="num">1</span>] <span class="op">=</span> <span class="num">300</span>
+        notes[<span class="num">2</span>] <span class="op">+=</span> <span class="num">5</span>
+        <span class="lt">let</span> mesures <span class="op">=</span> <span class="bi">array</span>(<span class="num">10</span>)   <span class="cm">// 10 cases à 0</span>
+        <span class="lt">let</span> grille <span class="op">=</span> [[<span class="num">1</span>, <span class="num">2</span>], [<span class="num">3</span>, <span class="num">4</span>]]
+        <span class="bi">print</span>(grille[<span class="num">1</span>][<span class="num">0</span>])    <span class="cm">// 3</span>
+    }
+}</pre>
+      <ul>
+        <li><code>[a, b, c]</code> crée un tableau, <code>[]</code> un tableau vide, <code>array(n)</code> un tableau de <code>n</code> zéros. Un long tableau peut s'écrire sur plusieurs lignes.</li>
+        <li>Les cases vont de <code>0</code> à <code>len(t) - 1</code> ; en dehors, le programme s'arrête (<code>indice 4 hors limites (taille 4)</code>).</li>
+        <li>La taille ne change pas après la création. Une case peut contenir un nombre, un texte, un objet ou un autre tableau.</li>
+        <li>Comme un objet, un tableau rangé dans deux variables reste <strong>le même</strong> : <code>let b = a</code> puis <code>b[0] = 9</code> modifie aussi <code>a</code>.</li>
+      </ul>
+
+      <h3 id="tx-for">La boucle for</h3>
+<pre><span class="kc">for</span> n <span class="kc">in</span> notes {             <span class="cm">// chaque case du tableau</span>
+    <span class="bi">print</span>(n)
+}
+<span class="kc">for</span> i <span class="kc">in</span> <span class="num">0</span><span class="op">..</span><span class="num">3</span> {               <span class="cm">// i = 0, 1, 2 (pas 3)</span>
+    <span class="bi">print</span>(i)
+}
+<span class="kc">for</span> i <span class="kc">in</span> <span class="num">0</span><span class="op">..</span><span class="bi">len</span>(notes) {      <span class="cm">// pour modifier les cases, on passe par l'indice</span>
+    notes[i] <span class="op">=</span> notes[i] <span class="op">*</span> <span class="num">2</span>
+}
+<span class="kc">for</span> c <span class="kc">in</span> <span class="str">"abc"</span> {             <span class="cm">// les codes des lettres : 97, 98, 99</span>
+    <span class="bi">print</span>(c)
+}</pre>
+      <ul>
+        <li><code>debut..fin</code> n'inclut pas <code>fin</code> : <code>0..len(t)</code> parcourt exactement toutes les cases.</li>
+        <li>La variable de boucle n'existe que dans la boucle ; la modifier ne change pas le nombre de tours.</li>
+        <li><code>break</code> et <code>continue</code> marchent comme dans <code>while</code>.</li>
+      </ul>
+
+      <h3 id="tx-morse">Exemple : morse.chl</h3>
+      <p>L'exemple <code>morse.chl</code> fait clignoter un message en morse sur la LED : un tableau de textes pour les codes des lettres, et deux boucles <code>for</code>.</p>
+      <pre class="sh">chili push examples\morse.chl</pre>
+      <pre class="out">Message : SOS CHILI
+... --- ... / -.-. .... .. .-.. ..</pre>
+
+      <h3 id="tx-memoire">Mémoire</h3>
+      <p>Les textes fabriqués pendant le programme et les tableaux partagent la mémoire des objets : <strong>32 Ko</strong> sur la carte, récupérés automatiquement quand ils ne servent plus. Garder beaucoup de données en même temps peut provoquer <code>memoire des objets pleine</code> ; <code>chili run</code> sur le PC a bien plus de mémoire et ne le montre pas forcément.</p>
+
+      <h3 id="tx-erreurs">Erreurs fréquentes</h3>
+      <div class="tbl err"><table>
+        <tr><th>Message</th><th>Cause</th></tr>
+        <tr><td><code>chaîne non terminée : il manque le " final</code></td><td>guillemet fermant oublié, ou texte sur deux lignes</td></tr>
+        <tr><td><code>'in' attendu, trouvé '='</code></td><td><code>for i = 0</code> : écris <code>for i in 0..10 {</code></td></tr>
+        <tr><td><code>'-' impossible entre une chaine et un entier</code></td><td>calcul sur un texte : seul <code>+</code> marche avec du texte</td></tr>
+        <tr><td><code>'+' impossible entre une chaine et un tableau</code></td><td>on ne colle au texte que du texte ou des nombres</td></tr>
+        <tr><td><code>indice 3 hors limites (taille 3)</code></td><td>case inexistante : de 0 à <code>len(t) - 1</code></td></tr>
+        <tr><td><code>les chaines ne sont pas modifiables</code></td><td><code>texte[i] = …</code> : fabrique un nouveau texte</td></tr>
+        <tr><td><code>indexation impossible sur un entier</code></td><td><code>x[0]</code> alors que <code>x</code> est un nombre</td></tr>
+        <tr><td><code>len() impossible sur un entier</code></td><td><code>len(x)</code> ou <code>for v in x</code> sur un nombre</td></tr>
+        <tr><td><code>gpio.write : l'argument 1 doit etre un entier (recu : une chaine)</code></td><td>texte passé à une fonction qui attend un nombre</td></tr>
       </table></div>
     </article>
 
@@ -722,8 +840,8 @@ vitesse <span class="op">+=</span> <span class="num">10</span>   <span class="cm
         <li>Un objet est une valeur comme une autre : variable, champ, paramètre, valeur renvoyée.</li>
         <li><strong><code>0</code> veut dire « pas d'objet »</strong> ; <code>a == b</code> est vrai si c'est le même objet.</li>
         <li>La mémoire est <strong>libérée toute seule</strong> : un objet que plus rien ne désigne est récupéré automatiquement quand la place manque.</li>
-        <li>La carte garde jusqu'à 16 Ko d'objets (environ 2 000 objets à un champ en même temps). Les objets temporaires ne posent pas de problème ; en garder des milliers, si.</li>
-        <li>Il faut le <strong>firmware 0.2.0</strong> ou plus récent : sinon, <code>chili flash</code> (ou le bandeau orange de Chili Lab).</li>
+        <li>La carte garde jusqu'à 32 Ko d'objets, textes et tableaux (environ 4 000 objets à un champ en même temps). Les objets temporaires ne posent pas de problème ; en garder des milliers, si.</li>
+        <li>Il faut le <strong>firmware 0.3.0</strong> ou plus récent : sinon, <code>chili flash</code> (ou le bandeau orange de Chili Lab).</li>
       </ul>
 
       <h3 id="cl-erreurs">Erreurs fréquentes avec les classes</h3>
@@ -742,7 +860,7 @@ vitesse <span class="op">+=</span> <span class="num">10</span>   <span class="cm
         <tr><td><code>aucune classe n'a de méthode 'eteint'</code></td><td>vérifie le nom de la méthode</td></tr>
         <tr><td><code>la classe Main n'a pas de champ 'x'</code></td><td>déclare le champ : <code>let x</code></td></tr>
         <tr><td><code>appel de allume() sur une valeur qui n'est pas un objet</code> (exécution)</td><td>l'objet vaut encore 0 : crée-le avec <code>new</code></td></tr>
-        <tr><td><code>memoire des objets pleine (4096 mots)</code> (exécution)</td><td>garde moins d'objets en même temps</td></tr>
+        <tr><td><code>memoire des objets pleine (8192 mots)</code> (exécution)</td><td>garde moins d'objets en même temps</td></tr>
       </table></div>
     </article>
 
@@ -753,7 +871,7 @@ vitesse <span class="op">+=</span> <span class="num">10</span>   <span class="cm
       <p class="lead">Fournies par la carte, elles s'appellent comme les autres fonctions. Leurs noms sont réservés.</p>
       <div class="tbl"><table>
         <tr><th>Fonction</th><th>Renvoie</th><th>Effet</th></tr>
-        <tr><td><code>print(v)</code></td><td>0</td><td>affiche le nombre sur une ligne</td></tr>
+        <tr><td><code>print(v)</code></td><td>0</td><td>affiche un nombre ou un texte sur une ligne</td></tr>
         <tr><td><code>delay(ms)</code></td><td>0</td><td>attend <code>ms</code> millisecondes</td></tr>
         <tr><td><code>millis()</code></td><td>ms</td><td>temps écoulé depuis le démarrage de la carte</td></tr>
         <tr><td><code>gpio.mode(p, m)</code></td><td>0</td><td>règle la broche <code>p</code> en entrée ou en sortie (mode 0 à 3)</td></tr>
@@ -762,12 +880,13 @@ vitesse <span class="op">+=</span> <span class="num">10</span>   <span class="cm
         <tr><td><code>random(min, max)</code></td><td>un nombre</td><td>tire un nombre au hasard entre <code>min</code> et <code>max</code> (bornes comprises)</td></tr>
         <tr><td><code>printc(code)</code></td><td>0</td><td>affiche un caractère (65 = <code>A</code>, 97 = <code>a</code>…), sans retour à la ligne</td></tr>
         <tr><td><code>println()</code></td><td>0</td><td>termine la ligne</td></tr>
+        <tr><td><code>str.sub</code>, <code>str.find</code>, <code>str.char</code>, <code>str.int</code></td><td>texte / nombre</td><td>fonctions de texte : voir <a href="#tx-texte">Le texte</a></td></tr>
       </table></div>
 
       <h3 id="nat-temps">print, delay, millis</h3>
       <p>Les extraits ci-dessous se placent dans <code>function main()</code> (ou une autre fonction).</p>
       <ul>
-        <li><code>print(v)</code> affiche un entier ; la sortie apparaît pendant <code>chili push</code> ou avec <code>chili monitor</code>. Pas encore de texte.</li>
+        <li><code>print(v)</code> affiche un nombre ou un texte (<code>print("il est " + millis() + " ms")</code>) ; la sortie apparaît pendant <code>chili push</code> ou avec <code>chili monitor</code>. Un tableau s'affiche <code>&lt;tableau 3&gt;</code>, un objet <code>&lt;Led&gt;</code>.</li>
         <li><code>delay(ms)</code> : 1000 = 1 seconde. Une valeur nulle ou négative ne fait rien. Pendant un <code>delay</code>, la carte continue de répondre aux commandes.</li>
         <li><code>millis()</code> sert à mesurer une durée, ou à faire une action régulière sans bloquer le reste du programme :</li>
       </ul>
@@ -903,7 +1022,7 @@ function Main.main  ; params=1 locals=1 max_stack=2
   COM4     WCH CH340 (1A86:7523)  &lt;- carte ESP32 probable
 
 COM4 :
-  Firmware Chili : 0.2.0 (bytecode v2)
+  Firmware Chili : 0.3.0 (bytecode v3)
   Puce           : ESP32-D0WD-V3, 251 Ko de mémoire libre
   WiFi           : non configuré (chili wifi &lt;réseau&gt; &lt;mot de passe&gt;)
   Programme      : 188 octets (crc 5e0c1f3a)
@@ -1043,14 +1162,14 @@ chili stop 192.168.1.42</pre>
       <p>Le programme a fait une opération impossible ; la carte fonctionne toujours. Lis le message (<a href="#lg-execution">liste des erreurs</a>), teste sur le PC avec <code>chili run</code>, corrige, puis <code>chili push</code>.</p>
 
       <h3>Firmware à mettre à jour</h3>
-      <pre class="out">  Firmware Chili : 0.1.3 (bytecode v1)
-                   une autre version (0.2.0) est disponible : chili flash
+      <pre class="out">  Firmware Chili : 0.2.1 (bytecode v2)
+                   une autre version (0.3.0) est disponible : chili flash
 
-COM4 : le firmware gère le bytecode v1, ce compilateur produit la v2.
+COM4 : le firmware gère le bytecode v2, ce compilateur produit la v3.
 Mets le firmware à jour avec : chili flash
 
 COM4 : le firmware de la carte ne connaît pas « kill ». Mets-le à jour avec : chili flash</pre>
-      <p>Après une mise à jour de Chili : <code>chili flash</code> par USB (ou le bandeau orange <strong>Mettre à jour</strong> de Chili Lab), puis renvoie ton programme. Obligatoire pour passer au firmware 0.2.0 : les programmes en <code>class Main</code> / <code>function</code> ne tournent pas sur un firmware plus ancien.</p>
+      <p>Après une mise à jour de Chili : <code>chili flash</code> par USB (ou le bandeau orange <strong>Mettre à jour</strong> de Chili Lab), puis renvoie ton programme. Obligatoire pour passer au firmware 0.3.0 : un programme compilé par la nouvelle version ne tourne pas sur un firmware plus ancien.</p>
 
       <h3>Autres cas</h3>
       <ul>
