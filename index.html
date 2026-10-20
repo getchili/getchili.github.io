@@ -76,7 +76,7 @@
   pre { margin: 0; padding: 18px 20px; font-size: 14px; line-height: 1.7; overflow-x: auto; }
   .kc { color: #ff4d4d; font-weight: 600; }          /* if / while */
   .kf { color: #ff7a59; font-weight: 600; font-style: italic; } /* return… */
-  .fn { color: #ff9f1c; font-weight: 600; }          /* fn */
+  .fn { color: #ff9f1c; font-weight: 600; }          /* function, class */
   .lt { color: #ffb86b; font-style: italic; }        /* let */
   .nm { color: #ffd23f; font-weight: 600; }          /* nom de fonction */
   .mod { color: #5fd068; font-weight: 600; }         /* gpio */
@@ -199,20 +199,22 @@
 <pre><span class="cm">// fait clignoter la LED de la carte</span>
 <span class="lt">let</span> led <span class="op">=</span> <span class="num">2</span>
 
-<span class="fn">fn</span> <span class="nm">main</span>() {
-    <span class="mod">gpio</span>.<span class="nat">mode</span>(led, <span class="num">1</span>)
-    <span class="kc">while</span> <span class="bool">true</span> {
-        <span class="mod">gpio</span>.<span class="nat">write</span>(led, <span class="num">1</span>)
-        <span class="bi">delay</span>(<span class="num">500</span>)
-        <span class="mod">gpio</span>.<span class="nat">write</span>(led, <span class="num">0</span>)
-        <span class="bi">delay</span>(<span class="num">500</span>)
+<span class="fn">class</span> <span class="nm">Main</span> {
+    <span class="fn">function</span> <span class="nm">main</span>() {
+        <span class="mod">gpio</span>.<span class="nat">mode</span>(led, <span class="num">1</span>)
+        <span class="kc">while</span> <span class="bool">true</span> {
+            <span class="mod">gpio</span>.<span class="nat">write</span>(led, <span class="num">1</span>)
+            <span class="bi">delay</span>(<span class="num">500</span>)
+            <span class="mod">gpio</span>.<span class="nat">write</span>(led, <span class="num">0</span>)
+            <span class="bi">delay</span>(<span class="num">500</span>)
+        }
     }
 }</pre>
       </div>
       <div class="window">
         <div class="bar"><i></i><i></i><i></i><span>terminal</span></div>
 <pre><span class="ps">&gt;</span> chili push blink.chl
-<span class="dim">Envoi de blink.chl (111 octets) vers COM5…</span> <span class="ok">ok (0.2 s)</span>
+<span class="dim">Envoi de blink.chl (188 octets) vers COM5…</span> <span class="ok">ok (0.2 s)</span>
 <span class="dim">Programme enregistré sur la carte et lancé.</span></pre>
       </div>
     </div>
@@ -227,7 +229,7 @@
     <div class="grid">
       <div class="card"><div class="ic">⚡</div><h3>Envoi instantané</h3><p>Le firmware est installé une seule fois. Ensuite, chaque programme part en une fraction de seconde, sans recompiler le firmware.</p></div>
       <div class="card"><div class="ic">📡</div><h3>Avec ou sans fil</h3><p>Par USB, ou par WiFi une fois la carte connectée au réseau : <code>chili push blink.chl 192.168.1.42</code>.</p></div>
-      <div class="card"><div class="ic">🪶</div><h3>Ultra léger</h3><p>Une VM en C d'environ 8 Ko de RAM, sans allocation dynamique. Le gros du travail est fait par le compilateur, sur ton PC.</p></div>
+      <div class="card"><div class="ic">🪶</div><h3>Ultra léger</h3><p>Une VM en C sans allocation dynamique, avec un ramasse-miettes pour les objets. Le gros du travail est fait par le compilateur, sur ton PC.</p></div>
       <div class="card"><div class="ic">🛡️</div><h3>Sûr par défaut</h3><p>Le bytecode est vérifié avant d'être lancé. Une division par zéro arrête le programme proprement, sans planter la carte.</p></div>
     </div>
   </div>
@@ -259,14 +261,22 @@
   <div class="wrap">
     <div class="kicker">Le langage</div>
     <h2>Simple à lire, rapide à écrire.</h2>
-    <p class="sub">Une syntaxe à accolades sans points-virgules, des entiers 32 bits, des fonctions et des boucles. Juste ce qu'il faut pour piloter du matériel.</p>
+    <p class="sub">Une syntaxe à accolades sans points-virgules, des entiers 32 bits, des fonctions, des boucles et des classes. Juste ce qu'il faut pour piloter du matériel.</p>
     <div class="lang">
-      <div class="window"><h3>Fonctions et récursion</h3>
-<pre><span class="fn">fn</span> <span class="nm">fib</span>(n) {
-    <span class="kc">if</span> n <span class="op">&lt;</span> <span class="num">2</span> {
-        <span class="kf">return</span> n
+      <div class="window"><h3>Classes et objets</h3>
+<pre><span class="fn">class</span> <span class="nm">Led</span> {
+    <span class="lt">let</span> broche
+
+    <span class="fn">constructor</span>(b) {
+        <span class="lt">this</span>.broche <span class="op">=</span> b
+        <span class="mod">gpio</span>.<span class="nat">mode</span>(b, <span class="num">1</span>)
     }
-    <span class="kf">return</span> fib(n <span class="op">-</span> <span class="num">1</span>) <span class="op">+</span> fib(n <span class="op">-</span> <span class="num">2</span>)
+
+    <span class="fn">function</span> <span class="nm">allume</span>(ms) {
+        <span class="mod">gpio</span>.<span class="nat">write</span>(<span class="lt">this</span>.broche, <span class="num">1</span>)
+        <span class="bi">delay</span>(ms)
+        <span class="mod">gpio</span>.<span class="nat">write</span>(<span class="lt">this</span>.broche, <span class="num">0</span>)
+    }
 }</pre></div>
       <div class="window"><h3>Boucles et conditions</h3>
 <pre><span class="lt">let</span> total <span class="op">=</span> <span class="num">0</span>

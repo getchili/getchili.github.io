@@ -180,9 +180,18 @@
           <li><a href="#lg-erreurs">Erreurs fréquentes</a></li>
         </ol>
       </li>
+      <li><a href="#classes">Classes</a>
+        <ol>
+          <li><a href="#cl-premiere">Une première classe</a></li>
+          <li><a href="#cl-prives">Champs privés</a></li>
+          <li><a href="#cl-heritage">Héritage</a></li>
+          <li><a href="#cl-abstract">Classes abstraites</a></li>
+          <li><a href="#cl-erreurs">Erreurs fréquentes</a></li>
+        </ol>
+      </li>
       <li><a href="#natives">Fonctions natives</a>
         <ol>
-          <li><a href="#nat-temps">print, delay, millis</a></li>
+          <li><a href="#nat-temps">print, delay, millis, random</a></li>
           <li><a href="#nat-gpio">Broches GPIO</a></li>
           <li><a href="#nat-exemples">Exemples LED et bouton</a></li>
         </ol>
@@ -208,11 +217,12 @@
         <li><a href="#premiers-pas">2. Premiers pas</a></li>
         <li><a href="#langage">3. Le langage</a></li>
         <li><a href="#lg-erreurs">&nbsp;&nbsp;&nbsp;Erreurs fréquentes</a></li>
-        <li><a href="#natives">4. Fonctions natives</a></li>
-        <li><a href="#commandes">5. Commandes</a></li>
-        <li><a href="#wifi">6. WiFi</a></li>
-        <li><a href="#depannage">7. Dépannage</a></li>
-        <li><a href="#chili-lab">8. Chili Lab</a></li>
+        <li><a href="#classes">4. Classes</a></li>
+        <li><a href="#natives">5. Fonctions natives</a></li>
+        <li><a href="#commandes">6. Commandes</a></li>
+        <li><a href="#wifi">7. WiFi</a></li>
+        <li><a href="#depannage">8. Dépannage</a></li>
+        <li><a href="#chili-lab">9. Chili Lab</a></li>
       </ol>
     </details>
 
@@ -247,7 +257,7 @@ chili push examples\blink.chl   <span class="cm"># envoie et lance un programme<
         <li>Tape :</li>
       </ol>
       <pre class="sh">chili version</pre>
-      <pre class="out">chili 0.1.0 (firmware ESP32 embarqué : 0.1.3, bytecode v1)</pre>
+      <pre class="out">chili 0.1.0 (firmware ESP32 embarqué : 0.2.0, bytecode v2)</pre>
       <p>Si tu vois <code>chili : Le terme «chili» n'est pas reconnu…</code>, ouvre un nouveau terminal. Sinon, relance l'installateur avec <strong>Ajouter chili au PATH</strong> coché.</p>
 
       <h3>Mettre à jour, désinstaller</h3>
@@ -292,13 +302,14 @@ COM4 :
       <h3 id="pp-flash">4. Installer le firmware Chili</h3>
       <p>Le firmware est le programme qui reste sur la carte et exécute tes programmes Chili. On l'installe <strong>une fois par carte</strong> (et après chaque mise à jour de Chili).</p>
       <pre class="sh">chili flash</pre>
-      <pre class="out">Installation du firmware Chili 0.1.3 sur COM4.
+      <pre class="out">Installation du firmware Chili 0.2.0 sur COM4.
 Ne débranche pas la carte pendant l'opération.
 
   [##############################] 100 %  firmware.bin
 
 Firmware écrit et vérifié en 28 s. Redémarrage de la carte…
-Firmware Chili 0.1.3 opérationnel sur ESP32-D0WD-V3.</pre>
+Firmware Chili 0.2.0 opérationnel sur ESP32-D0WD-V3.</pre>
+      <p>Ta carte a déjà un firmware Chili plus ancien que 0.2.0 ? Relance aussi <code>chili flash</code> : les programmes actuels (<code>class Main</code>, <code>function</code>) ne tournent pas dessus.</p>
       <p>Si la carte « ne passe pas en mode programmation automatiquement » :</p>
       <ol>
         <li>maintiens le bouton <strong>BOOT</strong> enfoncé ;</li>
@@ -312,7 +323,7 @@ Firmware Chili 0.1.3 opérationnel sur ESP32-D0WD-V3.</pre>
       <pre class="sh">Copy-Item "$env:LOCALAPPDATA\Programs\Chili\examples" "$HOME\Documents\chili" -Recurse
 cd "$HOME\Documents\chili"</pre>
       <pre class="sh">chili push blink.chl</pre>
-      <pre class="out">Envoi de blink.chl (111 octets) vers COM4… ok (180 ms)
+      <pre class="out">Envoi de blink.chl (188 octets) vers COM4… ok (180 ms)
 Programme enregistré sur la carte et lancé. Il redémarrera tout seul à chaque mise sous tension.
 Sortie de la carte — Ctrl+C pour quitter (le programme continue de tourner).</pre>
       <div class="note ok"><p>La LED bleue clignote. 🎉 <strong>Ctrl+C</strong> ferme l'affichage, mais le programme continue de tourner. Il est enregistré sur la carte : débranche-la, rebranche-la (même sur un chargeur), il repart tout seul.</p></div>
@@ -332,6 +343,8 @@ Sortie de la carte — Ctrl+C pour quitter (le programme continue de tourner).</
         <tr><td><code>bouton.chl</code></td><td>allume la LED tant qu'on appuie sur le bouton <strong>BOOT</strong> (GPIO 0)</td></tr>
         <tr><td><code>compteur.chl</code></td><td>compte les appuis sur BOOT et affiche le total avec <code>print</code></td></tr>
         <tr><td><code>sos.chl</code></td><td>« SOS » en morse sur la LED, découpé en fonctions</td></tr>
+        <tr><td><code>de.chl</code></td><td>dé électronique : un appui sur BOOT, la LED clignote de 1 à 6 fois (<code>random</code>)</td></tr>
+        <tr><td><code>motifs.chl</code></td><td>motifs de clignotement tirés au hasard, écrits avec des <a href="#classes">classes</a></td></tr>
         <tr><td><code>fib.chl</code></td><td>suite de Fibonacci et mesure du temps de calcul</td></tr>
       </table></div>
       <p>Essaie <code>chili push compteur.chl</code> puis appuie sur BOOT : <code>1</code>, <code>2</code>, <code>3</code>… s'affichent.</p>
@@ -341,33 +354,37 @@ Sortie de la carte — Ctrl+C pour quitter (le programme continue de tourner).</
     <article id="langage">
       <div class="kicker">Référence</div>
       <h2>Le langage</h2>
-      <p class="lead">Chili est volontairement petit : des entiers, des variables, des fonctions, des conditions et des boucles.</p>
+      <p class="lead">Chili est volontairement petit : des entiers, des variables, des fonctions, des conditions, des boucles et des <a href="#classes">classes</a>.</p>
       <p>Pour tester sans carte :</p>
       <pre class="sh">chili check mon_programme.chl   <span class="cm"># vérifie qu'il n'y a pas d'erreur</span>
 chili run mon_programme.chl     <span class="cm"># l'exécute sur le PC (broches simulées)</span></pre>
 
       <h3 id="lg-structure">Structure d'un programme</h3>
-      <p>Un fichier <code>.chl</code> contient des <strong>fonctions</strong> et des <strong>variables globales</strong>. Il doit avoir une fonction <code>main</code>, lancée au démarrage.</p>
+      <p>Un fichier <code>.chl</code> contient des <strong>variables globales</strong>, des <strong>fonctions</strong> et des <strong>classes</strong>. Il doit avoir une classe <code>Main</code> avec une fonction <code>main()</code> : c'est elle qui est lancée au démarrage.</p>
 <pre><span class="cm">// blink.chl — fait clignoter la LED de la carte</span>
 <span class="lt">let</span> led <span class="op">=</span> <span class="num">2</span>          <span class="cm">// variable globale</span>
 
-<span class="fn">fn</span> <span class="nm">main</span>() {
-    <span class="mod">gpio</span>.<span class="nat">mode</span>(led, <span class="num">1</span>)
-    <span class="kc">while</span> <span class="bool">true</span> {
-        <span class="mod">gpio</span>.<span class="nat">write</span>(led, <span class="num">1</span>)
-        <span class="bi">delay</span>(<span class="num">500</span>)
-        <span class="mod">gpio</span>.<span class="nat">write</span>(led, <span class="num">0</span>)
-        <span class="bi">delay</span>(<span class="num">500</span>)
+<span class="fn">class</span> <span class="nm">Main</span> {
+    <span class="fn">function</span> <span class="nm">main</span>() {
+        <span class="mod">gpio</span>.<span class="nat">mode</span>(led, <span class="num">1</span>)
+        <span class="kc">while</span> <span class="bool">true</span> {
+            <span class="mod">gpio</span>.<span class="nat">write</span>(led, <span class="num">1</span>)
+            <span class="bi">delay</span>(<span class="num">500</span>)
+            <span class="mod">gpio</span>.<span class="nat">write</span>(led, <span class="num">0</span>)
+            <span class="bi">delay</span>(<span class="num">500</span>)
+        }
     }
 }</pre>
+      <p>Au démarrage, la carte initialise les variables globales (dans l'ordre du fichier), crée un objet <code>Main</code>, puis appelle sa fonction <code>main()</code>. Pour l'instant, retiens simplement le modèle : ton programme va dans <code>class Main { function main() { … } }</code>.</p>
       <ul>
         <li><code>//</code> commence un commentaire jusqu'à la fin de la ligne.</li>
         <li><strong>Pas de point-virgule</strong> en fin de ligne : Chili les ajoute tout seul. On n'en met que pour deux instructions sur une ligne : <code>gpio.write(2, 1); delay(100)</code>.</li>
         <li>L'indentation est libre (4 espaces est l'usage).</li>
       </ul>
+      <div class="note"><p>Les anciennes versions écrivaient <code>fn main() { … }</code>. Ce n'est plus accepté : les fonctions s'écrivent <code>function</code>, et <code>main</code> va dans <code>class Main</code>.</p></div>
 
       <h3 id="lg-accolades">La règle d'or : l'accolade sur la même ligne</h3>
-      <p>L'accolade <code>{</code> doit être <strong>sur la même ligne</strong> que <code>fn</code>, <code>if</code>, <code>else</code> ou <code>while</code>. Et <code>else</code> se met sur la même ligne que le <code>}</code> qui le précède.</p>
+      <p>L'accolade <code>{</code> doit être <strong>sur la même ligne</strong> que <code>class</code>, <code>function</code>, <code>if</code>, <code>else</code> ou <code>while</code>. Et <code>else</code> se met sur la même ligne que le <code>}</code> qui le précède.</p>
 <pre><span class="cm yes">// ✅ correct</span>
 <span class="kc">if</span> x <span class="op">&gt;</span> <span class="num">0</span> {
     <span class="bi">print</span>(x)
@@ -386,7 +403,7 @@ chili run mon_programme.chl     <span class="cm"># l'exécute sur le PC (broches
       <p>Pourquoi : Chili ajoute un point-virgule invisible en fin de ligne quand elle se termine par un nom, un nombre, <code>)</code> ou <code>}</code>. <code>if x &gt; 0</code> suivi d'un retour à la ligne devient <code>if x &gt; 0;</code>.</p>
 
       <h3 id="lg-nombres">Nombres</h3>
-      <p>Un seul type : l'<strong>entier signé 32 bits</strong>, de <strong>-2 147 483 648</strong> à <strong>2 147 483 647</strong>. Pas de nombres à virgule ni de texte pour l'instant.</p>
+      <p>Une seule sorte de valeur : l'<strong>entier signé 32 bits</strong>, de <strong>-2 147 483 648</strong> à <strong>2 147 483 647</strong>. Pas de nombres à virgule ni de texte pour l'instant. Les objets (voir <a href="#classes">Classes</a>) se rangent eux aussi dans des variables.</p>
       <div class="tbl"><table>
         <tr><th>Écriture</th><th>Valeur</th><th>Remarque</th></tr>
         <tr><td><code>42</code></td><td>42</td><td>décimal</td></tr>
@@ -408,26 +425,29 @@ chili run mon_programme.chl     <span class="cm"># l'exécute sur le PC (broches
 vitesse <span class="op">=</span> <span class="num">200</span>
 vitesse <span class="op">+=</span> <span class="num">10</span>   <span class="cm">// vitesse = vitesse + 10</span></pre>
       <ul>
-        <li>Déclarée <strong>hors de toute fonction</strong> : variable <strong>globale</strong>, visible partout, initialisée avant <code>main</code> dans l'ordre du fichier.</li>
+        <li>Déclarée <strong>hors de toute fonction et de toute classe</strong> : variable <strong>globale</strong>, visible partout, initialisée avant <code>main</code> dans l'ordre du fichier.</li>
         <li>Déclarée <strong>dans un bloc</strong> <code>{ … }</code> : <strong>locale</strong> à ce bloc.</li>
         <li>Pas deux <code>let</code> du même nom dans un bloc. Dans un bloc imbriqué, un nouveau <code>let</code> <strong>masque</strong> l'ancienne variable jusqu'à la fin du bloc.</li>
+        <li>Un <code>let</code> écrit directement dans une classe est un <strong>champ</strong> de l'objet : voir <a href="#classes">Classes</a>.</li>
       </ul>
-<pre><span class="lt">let</span> compte <span class="op">=</span> <span class="num">0</span>          <span class="cm">// globale</span>
+<pre><span class="lt">let</span> compte <span class="op">=</span> <span class="num">0</span>              <span class="cm">// globale</span>
 
-<span class="fn">fn</span> <span class="nm">ajoute</span>() {
-    compte <span class="op">+=</span> <span class="num">1</span>         <span class="cm">// modifie la globale</span>
+<span class="fn">function</span> <span class="nm">ajoute</span>() {
+    compte <span class="op">+=</span> <span class="num">1</span>             <span class="cm">// modifie la globale</span>
 }
 
-<span class="fn">fn</span> <span class="nm">main</span>() {
-    ajoute()
-    <span class="bi">print</span>(compte)       <span class="cm">// 1</span>
-    <span class="kc">if</span> <span class="bool">true</span> {
-        <span class="lt">let</span> compte <span class="op">=</span> <span class="num">99</span> <span class="cm">// locale au bloc</span>
-        <span class="bi">print</span>(compte)   <span class="cm">// 99</span>
+<span class="fn">class</span> <span class="nm">Main</span> {
+    <span class="fn">function</span> <span class="nm">main</span>() {
+        ajoute()
+        <span class="bi">print</span>(compte)       <span class="cm">// 1</span>
+        <span class="kc">if</span> <span class="bool">true</span> {
+            <span class="lt">let</span> compte <span class="op">=</span> <span class="num">99</span> <span class="cm">// locale au bloc</span>
+            <span class="bi">print</span>(compte)   <span class="cm">// 99</span>
+        }
+        <span class="bi">print</span>(compte)       <span class="cm">// 1</span>
     }
-    <span class="bi">print</span>(compte)       <span class="cm">// 1</span>
 }</pre>
-      <p><strong>Noms</strong> : une lettre ou <code>_</code>, puis lettres, chiffres ou <code>_</code>, sans accents. Interdits : les mots-clés (<code>fn let if else while return break continue true false</code>) et les natives (<code>print</code>, <code>delay</code>, <code>millis</code>, <code>gpio</code>).</p>
+      <p><strong>Noms</strong> : une lettre ou <code>_</code>, puis lettres, chiffres ou <code>_</code>, sans accents (classes avec une majuscule par habitude). Interdits : les mots-clés (<code>function let if else while return break continue true false class abstract extends constructor this super new</code>) et les natives (<code>print</code>, <code>delay</code>, <code>millis</code>, <code>random</code>, <code>gpio</code>).</p>
 
       <h3 id="lg-operateurs">Opérateurs</h3>
       <p>Du plus prioritaire au moins prioritaire :</p>
@@ -441,7 +461,7 @@ vitesse <span class="op">+=</span> <span class="num">10</span>   <span class="cm
         <tr><td><code>^</code></td><td>OU exclusif bit à bit</td></tr>
         <tr><td><code>|</code></td><td>OU bit à bit</td></tr>
         <tr><td><code>&lt;</code> <code>&lt;=</code> <code>&gt;</code> <code>&gt;=</code></td><td>comparaisons</td></tr>
-        <tr><td><code>==</code> <code>!=</code></td><td>égal, différent</td></tr>
+        <tr><td><code>==</code> <code>!=</code></td><td>égal, différent (pour des objets : le même objet)</td></tr>
         <tr><td><code>&amp;&amp;</code></td><td>ET logique</td></tr>
         <tr><td><code>||</code></td><td>OU logique</td></tr>
       </table></div>
@@ -454,7 +474,7 @@ vitesse <span class="op">+=</span> <span class="num">10</span>   <span class="cm
       <h3 id="lg-if">Conditions : if / else</h3>
 <pre><span class="kc">if</span> temperature <span class="op">&gt;</span> <span class="num">30</span> {
     <span class="mod">gpio</span>.<span class="nat">write</span>(ventilo, <span class="num">1</span>)
-} <span class="kc">else if</span> temperature <span class="op">&lt;</span> <span class="num">25</span> {
+} <span class="kc">else</span> <span class="kc">if</span> temperature <span class="op">&lt;</span> <span class="num">25</span> {
     <span class="mod">gpio</span>.<span class="nat">write</span>(ventilo, <span class="num">0</span>)
 } <span class="kc">else</span> {
     <span class="cm">// rien à faire</span>
@@ -476,60 +496,253 @@ vitesse <span class="op">+=</span> <span class="num">10</span>   <span class="cm
 }</pre>
 
       <h3 id="lg-fonctions">Fonctions</h3>
-<pre><span class="fn">fn</span> <span class="nm">carre</span>(n) {
+      <p>Une fonction se déclare avec <code>function</code>, au niveau global (hors des classes) :</p>
+<pre><span class="fn">function</span> <span class="nm">carre</span>(n) {
     <span class="kf">return</span> n <span class="op">*</span> n
 }
 
-<span class="fn">fn</span> <span class="nm">fib</span>(n) {
+<span class="fn">function</span> <span class="nm">fib</span>(n) {
     <span class="kc">if</span> n <span class="op">&lt;</span> <span class="num">2</span> {
         <span class="kf">return</span> n
     }
     <span class="kf">return</span> fib(n <span class="op">-</span> <span class="num">1</span>) <span class="op">+</span> fib(n <span class="op">-</span> <span class="num">2</span>)
+}
+
+<span class="fn">class</span> <span class="nm">Main</span> {
+    <span class="fn">function</span> <span class="nm">main</span>() {
+        <span class="bi">print</span>(carre(<span class="num">7</span>))   <span class="cm">// 49</span>
+        <span class="bi">print</span>(fib(<span class="num">10</span>))    <span class="cm">// 55</span>
+    }
 }</pre>
       <ul>
         <li>Zéro, un ou plusieurs paramètres, séparés par des virgules.</li>
-        <li>Une fonction renvoie <strong>toujours un entier</strong> : la valeur du <code>return</code>, ou <code>0</code>.</li>
+        <li>Une fonction renvoie <strong>toujours une valeur</strong> : celle du <code>return</code>, ou <code>0</code>.</li>
         <li>On peut l'appeler <strong>avant</strong> sa définition dans le fichier. La récursion est permise.</li>
-        <li><code>main</code> n'a pas de paramètres.</li>
+        <li>Pas de fonction à l'intérieur d'une autre fonction.</li>
         <li>Une instruction seule doit être un appel : <code>carre(3)</code> est permis, <code>x + 1</code> seul ne l'est pas.</li>
+        <li>Une <code>function</code> écrite <strong>dans une classe</strong> est une <strong>méthode</strong>, comme <code>main</code> dans <code>class Main</code> : voir <a href="#classes">Classes</a>.</li>
       </ul>
 
       <h3 id="lg-erreurs">Erreurs fréquentes</h3>
-      <p><code>chili check</code> (et <code>chili push</code>, qui vérifie avant d'envoyer) affiche <code>fichier:ligne:colonne: message</code>.</p>
+      <p><code>chili check</code> (et <code>chili push</code>, qui vérifie avant d'envoyer) affiche <code>fichier:ligne:colonne: message</code>. Erreurs propres aux classes : <a href="#cl-erreurs">ici</a>.</p>
       <div class="tbl err"><table>
         <tr><th>Message</th><th>Correction</th></tr>
-        <tr><td><code>'{' attendu, trouvé fin de ligne</code></td><td>remonte <code>{</code> sur la ligne du <code>fn</code> / <code>if</code> / <code>while</code></td></tr>
+        <tr><td><code>'fn' n'existe plus : écris 'function'</code></td><td>ancienne syntaxe : remplace <code>fn</code> par <code>function</code> et mets <code>main</code> dans <code>class Main</code></td></tr>
+        <tr><td><code>le programme doit définir la classe Main avec une méthode main() : class Main { function main() { … } }</code></td><td>entoure ta fonction <code>main</code> de <code>class Main { … }</code></td></tr>
+        <tr><td><code>'{' attendu, trouvé fin de ligne</code></td><td>remonte <code>{</code> sur la ligne du <code>function</code> / <code>if</code> / <code>while</code></td></tr>
         <tr><td><code>expression attendue, trouvé 'else'</code></td><td>écris <code>} else {</code> sur une seule ligne</td></tr>
         <tr><td><code>'x' n'est pas déclaré</code></td><td>ajoute <code>let x = …</code> avant, ou corrige la faute de frappe</td></tr>
-        <tr><td><code>fonction 'foo' non déclarée</code></td><td>vérifie le nom, ou définis <code>fn foo()</code></td></tr>
-        <tr><td><code>'a' est déjà déclaré dans cette portée (variable locale, ligne 2)</code></td><td>la 2<sup>e</sup> fois, écris <code>a = 2</code> sans <code>let</code></td></tr>
+        <tr><td><code>fonction 'foo' non déclarée</code></td><td>vérifie le nom, ou définis <code>function foo()</code></td></tr>
+        <tr><td><code>'a' est déjà déclaré dans cette portée (variable locale, ligne 3)</code></td><td>la 2<sup>e</sup> fois, écris <code>a = 2</code> sans <code>let</code></td></tr>
         <tr><td><code>'=' attendu, trouvé fin de ligne</code></td><td><code>let x</code> sans valeur : écris <code>let x = 0</code></td></tr>
         <tr><td><code>delay attend 1 argument(s), 2 fourni(s)</code></td><td>mauvais nombre d'arguments : voir <a href="#natives">les natives</a></td></tr>
         <tr><td><code>le module 'gpio' n'a pas de fonction 'blink'</code></td><td>natives : <code>gpio.mode</code>, <code>gpio.write</code>, <code>gpio.read</code></td></tr>
         <tr><td><code>'delay' est une fonction native, ce nom est réservé</code></td><td>choisis un autre nom de variable</td></tr>
-        <tr><td><code>le programme doit définir fn main()</code></td><td>ajoute <code>fn main() { … }</code></td></tr>
-        <tr><td><code>main ne doit pas avoir de paramètres (1 trouvés)</code></td><td>écris <code>fn main()</code></td></tr>
+        <tr><td><code>main() ne doit pas avoir de paramètres (1 trouvés)</code></td><td>écris <code>function main()</code></td></tr>
+        <tr><td><code>les fonctions et les classes se déclarent au niveau global</code></td><td>sors la <code>function</code> de la fonction qui la contient</td></tr>
         <tr><td><code>'break' en dehors d'une boucle</code></td><td>mets-le dans un <code>while</code>, ou utilise <code>return</code></td></tr>
         <tr><td><code>expression attendue, trouvé '+'</code></td><td><code>x++</code> n'existe pas : <code>x += 1</code></td></tr>
         <tr><td><code>')' attendu, trouvé fin de ligne</code></td><td>ferme la parenthèse</td></tr>
         <tr><td><code>'}' attendu, trouvé fin de fichier</code></td><td>ajoute l'accolade fermante oubliée</td></tr>
         <tr><td><code>fin d'instruction attendue, trouvé identifiant 'print'</code></td><td>deux instructions sur une ligne : va à la ligne ou sépare par <code>;</code></td></tr>
         <tr><td><code>caractère inattendu '"'</code></td><td>pas encore de texte : <code>print</code> n'affiche que des nombres</td></tr>
-        <tr><td><code>on ne peut affecter qu'une variable</code></td><td>à gauche de <code>=</code>, un nom de variable</td></tr>
-        <tr><td><code>expression inutilisée : seul un appel de fonction peut servir d'instruction</code></td><td>souvent un <code>for</code> : utilise <code>while</code></td></tr>
+        <tr><td><code>on ne peut affecter qu'une variable ou un champ (this.champ)</code></td><td>à gauche de <code>=</code>, un nom de variable ou <code>this.champ</code></td></tr>
+        <tr><td><code>expression inutilisée : seul un appel (fonction, méthode, new) peut servir d'instruction</code></td><td>souvent un <code>for</code> : utilise <code>while</code></td></tr>
       </table></div>
 
       <h4 id="lg-execution">Erreurs d'exécution</h4>
-      <p>Elles arrivent pendant que le programme tourne ; il s'arrête et le message s'affiche :</p>
-      <pre class="out">erreur d'exécution dans main (pc 0008) : division par zéro       <span class="cm">← chili run (PC)</span>
-[chili] erreur : division par zero (fonction f0, pc 0008)        <span class="cm">← carte</span></pre>
+      <p>Elles arrivent pendant que le programme tourne ; il s'arrête et le message s'affiche (<code>Main.main</code> = la fonction <code>main</code> de la classe <code>Main</code>) :</p>
+      <pre class="out">erreur d'exécution dans Main.main (pc 0008) : division par zéro   <span class="cm">← chili run (PC)</span>
+[chili] erreur : division par zero (dans Main.main, pc 0008)      <span class="cm">← carte</span></pre>
       <div class="tbl err"><table>
         <tr><th>Message</th><th>Cause</th></tr>
         <tr><td><code>division par zéro</code> / <code>modulo par zéro</code></td><td><code>/</code> ou <code>%</code> par 0</td></tr>
         <tr><td><code>trop d'appels imbriqués (récursion trop profonde ?)</code></td><td>une fonction s'appelle sans fin</td></tr>
+        <tr><td><code>random : le maximum (1) est plus petit que le minimum (6)</code></td><td><code>random(6, 1)</code> : le plus petit nombre d'abord</td></tr>
         <tr><td><code>gpio.mode : broche 99 invalide</code></td><td>broche inexistante sur l'ESP32</td></tr>
         <tr><td><code>gpio.mode : la broche 34 ne peut pas etre une sortie</code></td><td>broches 34 à 39 : entrée seulement</td></tr>
         <tr><td><code>gpio.mode : mode 4 inconnu (0 a 3)</code></td><td>mode autre que 0, 1, 2, 3</td></tr>
+        <tr><td><code>appel de allume() sur une valeur qui n'est pas un objet</code></td><td>méthode appelée sur <code>0</code> : objet jamais créé (<a href="#classes">Classes</a>)</td></tr>
+        <tr><td><code>memoire des objets pleine</code></td><td>trop d'objets gardés en même temps (<a href="#classes">Classes</a>)</td></tr>
+      </table></div>
+    </article>
+
+    <!-- ================================================================ -->
+    <article id="classes">
+      <div class="kicker">Référence</div>
+      <h2>Classes</h2>
+      <p class="lead">Une classe regroupe des données et les fonctions qui s'en servent. Une classe <code>Led</code> sait sur quelle broche est sa LED et sait l'allumer ; on crée ensuite autant de LED qu'on veut : ce sont des <strong>objets</strong>.</p>
+      <p>Tu en utilises déjà une : tout programme commence par <code>class Main</code>.</p>
+
+      <h3 id="cl-premiere">Une première classe</h3>
+<pre><span class="fn">class</span> <span class="nm">Led</span> {
+    <span class="lt">let</span> broche                      <span class="cm">// un champ : chaque Led a le sien</span>
+
+    <span class="fn">constructor</span>(b) {                <span class="cm">// appelé à la création de l'objet</span>
+        <span class="lt">this</span>.broche <span class="op">=</span> b
+        <span class="mod">gpio</span>.<span class="nat">mode</span>(b, <span class="num">1</span>)
+    }
+
+    <span class="fn">function</span> <span class="nm">allume</span>(duree) {        <span class="cm">// une méthode</span>
+        <span class="mod">gpio</span>.<span class="nat">write</span>(<span class="lt">this</span>.broche, <span class="num">1</span>)
+        <span class="bi">delay</span>(duree)
+        <span class="mod">gpio</span>.<span class="nat">write</span>(<span class="lt">this</span>.broche, <span class="num">0</span>)
+    }
+}
+
+<span class="fn">class</span> <span class="nm">Main</span> {
+    <span class="fn">function</span> <span class="nm">main</span>() {
+        <span class="lt">let</span> led <span class="op">=</span> <span class="kc">new</span> <span class="nm">Led</span>(<span class="num">2</span>)        <span class="cm">// crée un objet Led sur la broche 2</span>
+        <span class="kc">while</span> <span class="bool">true</span> {
+            led.allume(<span class="num">300</span>)         <span class="cm">// appelle sa méthode</span>
+            <span class="bi">delay</span>(<span class="num">300</span>)
+        }
+    }
+}</pre>
+      <div class="tbl"><table>
+        <tr><th>Écriture</th><th>Sens</th></tr>
+        <tr><td><code>class Led { … }</code></td><td>déclare la classe (au niveau global, nom avec une majuscule)</td></tr>
+        <tr><td><code>let broche</code></td><td>un <strong>champ</strong> : une variable que chaque objet possède (0 au départ, ou <code>let broche = 2</code>)</td></tr>
+        <tr><td><code>constructor(b) { … }</code></td><td>le <strong>constructeur</strong> : exécuté à la création de l'objet</td></tr>
+        <tr><td><code>function allume(duree)</code></td><td>une <strong>méthode</strong> : une fonction qui travaille sur l'objet</td></tr>
+        <tr><td><code>this.broche</code></td><td>le champ <code>broche</code> de <strong>cet</strong> objet (dans la classe uniquement)</td></tr>
+        <tr><td><code>new Led(2)</code></td><td>crée un objet ; les arguments vont au constructeur</td></tr>
+        <tr><td><code>led.allume(300)</code></td><td>appelle la méthode <code>allume</code> de l'objet <code>led</code></td></tr>
+      </table></div>
+      <p>Chaque objet a ses propres champs : <code>let bleue = new Led(2)</code> et <code>let rouge = new Led(4)</code> pilotent deux LED différentes.</p>
+
+      <h3 id="cl-prives">Les champs sont privés</h3>
+      <p>Un champ ne se lit et ne s'écrit qu'avec <code>this.</code>, dans la classe. De l'extérieur, on passe par une méthode. Dans une méthode, <code>this.ajoute()</code> appelle une autre méthode du même objet (sans <code>this.</code>, <code>ajoute()</code> désignerait une fonction globale).</p>
+<pre><span class="fn">class</span> <span class="nm">Compteur</span> {
+    <span class="lt">let</span> valeur <span class="op">=</span> <span class="num">0</span>
+
+    <span class="fn">function</span> <span class="nm">ajoute</span>() {
+        <span class="lt">this</span>.valeur <span class="op">+=</span> <span class="num">1</span>
+    }
+
+    <span class="fn">function</span> <span class="nm">lire</span>() {
+        <span class="kf">return</span> <span class="lt">this</span>.valeur
+    }
+}
+
+<span class="fn">class</span> <span class="nm">Main</span> {
+    <span class="fn">function</span> <span class="nm">main</span>() {
+        <span class="lt">let</span> c <span class="op">=</span> <span class="kc">new</span> <span class="nm">Compteur</span>()
+        c.ajoute()
+        c.ajoute()
+        <span class="bi">print</span>(c.lire())     <span class="cm">// 2  (écrire c.valeur est refusé)</span>
+    }
+}</pre>
+
+      <h3 id="cl-heritage">L'héritage : extends</h3>
+      <p>Une classe fille récupère les champs et les méthodes de sa classe parente, et peut en ajouter ou en remplacer.</p>
+<pre><span class="fn">class</span> <span class="nm">Animal</span> {
+    <span class="fn">function</span> <span class="nm">cri</span>() {
+        <span class="kf">return</span> <span class="num">0</span>
+    }
+}
+
+<span class="fn">class</span> <span class="nm">Chat</span> <span class="fn">extends</span> <span class="nm">Animal</span> {
+    <span class="fn">function</span> <span class="nm">cri</span>() {        <span class="cm">// remplace la méthode de Animal</span>
+        <span class="kf">return</span> <span class="num">1</span>
+    }
+}
+
+<span class="fn">class</span> <span class="nm">Main</span> {
+    <span class="fn">function</span> <span class="nm">main</span>() {
+        <span class="lt">let</span> a <span class="op">=</span> <span class="kc">new</span> <span class="nm">Animal</span>()
+        <span class="lt">let</span> b <span class="op">=</span> <span class="kc">new</span> <span class="nm">Chat</span>()
+        <span class="bi">print</span>(a.cri())      <span class="cm">// 0</span>
+        <span class="bi">print</span>(b.cri())      <span class="cm">// 1</span>
+    }
+}</pre>
+      <ul>
+        <li>Une méthode remplacée garde le <strong>même nombre de paramètres</strong>.</li>
+        <li><code>super.cri()</code> appelle la version de la classe parente.</li>
+        <li>Si le constructeur parent prend des paramètres, celui de la classe fille doit l'appeler avec <code>super(…)</code>. Une classe fille sans constructeur reprend celui de son parent.</li>
+      </ul>
+
+      <h3 id="cl-abstract">Les classes abstraites : l'exemple motifs.chl</h3>
+      <p>Une <code>abstract class</code> sert de modèle : on ne peut pas en créer d'objet, seulement des classes filles. Avec <code>abstract function</code> (sans corps), elle <strong>impose</strong> une méthode que chaque classe fille doit écrire. Dans <code>motifs.chl</code>, un <code>Motif</code> est une façon de faire clignoter la LED : il y en a plusieurs, mais tous savent <code>jouer()</code>.</p>
+<pre><span class="fn">abstract</span> <span class="fn">class</span> <span class="nm">Motif</span> {
+    <span class="lt">let</span> led
+
+    <span class="fn">constructor</span>(led) {
+        <span class="lt">this</span>.led <span class="op">=</span> led
+    }
+
+    <span class="fn">abstract</span> <span class="fn">function</span> <span class="nm">jouer</span>()       <span class="cm">// chaque motif dira comment il joue</span>
+
+    <span class="fn">function</span> <span class="nm">repeter</span>(fois) {        <span class="cm">// commune à tous les motifs</span>
+        <span class="lt">let</span> i <span class="op">=</span> <span class="num">0</span>
+        <span class="kc">while</span> i <span class="op">&lt;</span> fois {
+            <span class="lt">this</span>.jouer()
+            i <span class="op">+=</span> <span class="num">1</span>
+        }
+    }
+}
+
+<span class="fn">class</span> <span class="nm">Clignote</span> <span class="fn">extends</span> <span class="nm">Motif</span> {
+    <span class="fn">function</span> <span class="nm">jouer</span>() {
+        <span class="lt">this</span>.led.allume(<span class="num">300</span>)
+        <span class="bi">delay</span>(<span class="num">300</span>)
+    }
+}
+
+<span class="fn">class</span> <span class="nm">Battement</span> <span class="fn">extends</span> <span class="nm">Motif</span> {
+    <span class="fn">function</span> <span class="nm">jouer</span>() {
+        <span class="lt">this</span>.led.allume(<span class="num">80</span>)
+        <span class="bi">delay</span>(<span class="num">120</span>)
+        <span class="lt">this</span>.led.allume(<span class="num">80</span>)
+        <span class="bi">delay</span>(<span class="num">700</span>)
+    }
+}
+
+<span class="fn">class</span> <span class="nm">Main</span> {
+    <span class="fn">function</span> <span class="nm">main</span>() {
+        <span class="lt">let</span> led <span class="op">=</span> <span class="kc">new</span> <span class="nm">Led</span>(<span class="num">2</span>)        <span class="cm">// la classe Led ci-dessus</span>
+        <span class="kc">while</span> <span class="bool">true</span> {
+            <span class="lt">let</span> m <span class="op">=</span> <span class="kc">new</span> <span class="nm">Clignote</span>(led)
+            <span class="kc">if</span> <span class="bi">random</span>(<span class="num">1</span>, <span class="num">2</span>) <span class="op">==</span> <span class="num">2</span> {
+                m <span class="op">=</span> <span class="kc">new</span> <span class="nm">Battement</span>(led)
+            }
+            m.repeter(<span class="num">2</span>)
+        }
+    }
+}</pre>
+      <ol>
+        <li><code>Clignote</code> et <code>Battement</code> n'ont pas de constructeur : ils reprennent celui de <code>Motif</code>, donc <code>new Clignote(led)</code> range <code>led</code> dans <code>this.led</code>.</li>
+        <li><code>m.repeter(2)</code> exécute la méthode de <code>Motif</code>, qui appelle <code>this.jouer()</code>.</li>
+        <li><code>this.jouer()</code> choisit la version de la <strong>vraie classe</strong> de l'objet : <code>repeter</code> n'est écrite qu'une fois.</li>
+      </ol>
+      <p>L'exemple complet ajoute un troisième motif, <code>Morse</code>. Essaie-le : <code>chili push motifs.chl</code> ; le terminal affiche le numéro du motif tiré à chaque tour.</p>
+
+      <h3 id="cl-savoir">Bon à savoir</h3>
+      <ul>
+        <li>Un objet est une valeur comme une autre : variable, champ, paramètre, valeur renvoyée.</li>
+        <li><strong><code>0</code> veut dire « pas d'objet »</strong> ; <code>a == b</code> est vrai si c'est le même objet.</li>
+        <li>La mémoire est <strong>libérée toute seule</strong> : un objet que plus rien ne désigne est récupéré automatiquement quand la place manque.</li>
+        <li>La carte garde jusqu'à 16 Ko d'objets (environ 2 000 objets à un champ en même temps). Les objets temporaires ne posent pas de problème ; en garder des milliers, si.</li>
+        <li>Il faut le <strong>firmware 0.2.0</strong> ou plus récent : sinon, <code>chili flash</code> (ou le bandeau orange de Chili Lab).</li>
+      </ul>
+
+      <h3 id="cl-erreurs">Erreurs fréquentes avec les classes</h3>
+      <div class="tbl err"><table>
+        <tr><th>Message</th><th>Correction</th></tr>
+        <tr><td><code>les champs sont privés : écris this.broche dans la classe, ou passe par une méthode</code></td><td>ajoute une méthode qui renvoie <code>this.broche</code></td></tr>
+        <tr><td><code>'broche' n'est pas déclaré</code></td><td>dans une méthode, écris <code>this.broche</code></td></tr>
+        <tr><td><code>fonction 'allume' non déclarée : pour appeler la méthode, écris this.allume(…)</code></td><td>écris <code>this.allume(…)</code></td></tr>
+        <tr><td><code>'Led' est une classe : pour créer un objet, écris new Led(…)</code></td><td>écris <code>new Led(2)</code></td></tr>
+        <tr><td><code>new Led attend 1 argument(s) (son constructeur), 0 fourni(s)</code></td><td>donne les arguments du constructeur</td></tr>
+        <tr><td><code>Motif est abstraite : on ne peut pas en créer d'objet, crée plutôt une classe fille</code></td><td><code>new Clignote(…)</code> plutôt que <code>new Motif(…)</code></td></tr>
+        <tr><td><code>la classe Clignote doit définir la méthode abstraite jouer() héritée de Motif (ou être déclarée abstract)</code></td><td>ajoute <code>function jouer() { … }</code></td></tr>
+        <tr><td><code>une méthode abstraite n'a pas de corps</code></td><td>enlève <code>{ … }</code> ou enlève <code>abstract</code></td></tr>
+        <tr><td><code>le constructeur de Rouge doit appeler super(...) : Led attend 1 paramètre(s)</code></td><td>commence le constructeur par <code>super(4)</code> par exemple</td></tr>
+        <tr><td><code>B.f redéfinit A.f : elle doit avoir 1 paramètre(s), pas 0</code></td><td>garde les paramètres de la classe parente</td></tr>
+        <tr><td><code>aucune classe n'a de méthode 'eteint'</code></td><td>vérifie le nom de la méthode</td></tr>
+        <tr><td><code>la classe Main n'a pas de champ 'x'</code></td><td>déclare le champ : <code>let x</code></td></tr>
+        <tr><td><code>appel de allume() sur une valeur qui n'est pas un objet</code> (exécution)</td><td>l'objet vaut encore 0 : crée-le avec <code>new</code></td></tr>
+        <tr><td><code>memoire des objets pleine (4096 mots)</code> (exécution)</td><td>garde moins d'objets en même temps</td></tr>
       </table></div>
     </article>
 
@@ -550,6 +763,7 @@ vitesse <span class="op">+=</span> <span class="num">10</span>   <span class="cm
       </table></div>
 
       <h3 id="nat-temps">print, delay, millis</h3>
+      <p>Les extraits ci-dessous se placent dans <code>function main()</code> (ou une autre fonction).</p>
       <ul>
         <li><code>print(v)</code> affiche un entier ; la sortie apparaît pendant <code>chili push</code> ou avec <code>chili monitor</code>. Pas encore de texte.</li>
         <li><code>delay(ms)</code> : 1000 = 1 seconde. Une valeur nulle ou négative ne fait rien. Pendant un <code>delay</code>, la carte continue de répondre aux commandes.</li>
@@ -565,9 +779,9 @@ vitesse <span class="op">+=</span> <span class="num">10</span>   <span class="cm
 }</pre>
       <p>Le compteur de <code>millis()</code> dépasse la limite des entiers 32 bits au bout d'environ 24 jours : compare toujours une <strong>différence</strong> (<code>millis() - prochain &gt;= 0</code>), qui reste juste au passage de la limite.</p>
       <h3>Le hasard : <code>random(min, max)</code></h3>
-      <pre><code>let de = random(1, 6)       // 1, 2, 3, 4, 5 ou 6
-delay(random(200, 800))     // une pause imprévisible</code></pre>
-      <p>Sur l'ESP32, le hasard vient du générateur matériel de la puce : vrai aléatoire, sans graine à choisir. Si <code>max</code> est plus petit que <code>min</code>, le programme s'arrête avec une erreur. <code>random</code> demande le firmware 0.1.4 ou plus récent : Chili propose la mise à jour si besoin.</p>
+      <pre><span class="lt">let</span> de <span class="op">=</span> <span class="bi">random</span>(<span class="num">1</span>, <span class="num">6</span>)       <span class="cm">// 1, 2, 3, 4, 5 ou 6</span>
+<span class="bi">delay</span>(<span class="bi">random</span>(<span class="num">200</span>, <span class="num">800</span>))     <span class="cm">// une pause imprévisible</span></pre>
+      <p>Sur l'ESP32, le hasard vient du générateur matériel de la puce : vrai aléatoire, sans graine à choisir. Si <code>max</code> est plus petit que <code>min</code>, le programme s'arrête avec une erreur. L'exemple <code>de.chl</code> est un dé électronique : à chaque appui sur BOOT, la LED clignote de 1 à 6 fois.</p>
 
       <h3 id="nat-gpio">Broches GPIO</h3>
       <p>Utilise le <strong>numéro GPIO</strong> de la broche (sérigraphié <code>D2</code>, <code>GPIO2</code>, <code>IO2</code> ou <code>2</code>). Appelle <code>gpio.mode</code> une fois au début pour chaque broche.</p>
@@ -595,30 +809,34 @@ delay(random(200, 800))     // une pause imprévisible</code></pre>
       <p>GPIO 4 → résistance 220 Ω → patte longue de la LED ; patte courte → GND.</p>
 <pre><span class="lt">let</span> led <span class="op">=</span> <span class="num">4</span>
 
-<span class="fn">fn</span> <span class="nm">main</span>() {
-    <span class="mod">gpio</span>.<span class="nat">mode</span>(led, <span class="num">1</span>)       <span class="cm">// sortie</span>
-    <span class="kc">while</span> <span class="bool">true</span> {
-        <span class="mod">gpio</span>.<span class="nat">write</span>(led, <span class="num">1</span>)  <span class="cm">// allumée</span>
-        <span class="bi">delay</span>(<span class="num">200</span>)
-        <span class="mod">gpio</span>.<span class="nat">write</span>(led, <span class="num">0</span>)  <span class="cm">// éteinte</span>
-        <span class="bi">delay</span>(<span class="num">800</span>)
+<span class="fn">class</span> <span class="nm">Main</span> {
+    <span class="fn">function</span> <span class="nm">main</span>() {
+        <span class="mod">gpio</span>.<span class="nat">mode</span>(led, <span class="num">1</span>)       <span class="cm">// sortie</span>
+        <span class="kc">while</span> <span class="bool">true</span> {
+            <span class="mod">gpio</span>.<span class="nat">write</span>(led, <span class="num">1</span>)  <span class="cm">// allumée</span>
+            <span class="bi">delay</span>(<span class="num">200</span>)
+            <span class="mod">gpio</span>.<span class="nat">write</span>(led, <span class="num">0</span>)  <span class="cm">// éteinte</span>
+            <span class="bi">delay</span>(<span class="num">800</span>)
+        }
     }
 }</pre>
       <h4>Bouton BOOT → LED (<code>bouton.chl</code>)</h4>
 <pre><span class="lt">let</span> bouton <span class="op">=</span> <span class="num">0</span>
 <span class="lt">let</span> led <span class="op">=</span> <span class="num">2</span>
 
-<span class="fn">fn</span> <span class="nm">main</span>() {
-    <span class="mod">gpio</span>.<span class="nat">mode</span>(bouton, <span class="num">2</span>) <span class="cm">// entrée avec pull-up</span>
-    <span class="mod">gpio</span>.<span class="nat">mode</span>(led, <span class="num">1</span>)    <span class="cm">// sortie</span>
+<span class="fn">class</span> <span class="nm">Main</span> {
+    <span class="fn">function</span> <span class="nm">main</span>() {
+        <span class="mod">gpio</span>.<span class="nat">mode</span>(bouton, <span class="num">2</span>) <span class="cm">// entrée avec pull-up</span>
+        <span class="mod">gpio</span>.<span class="nat">mode</span>(led, <span class="num">1</span>)    <span class="cm">// sortie</span>
 
-    <span class="kc">while</span> <span class="bool">true</span> {
-        <span class="kc">if</span> <span class="mod">gpio</span>.<span class="nat">read</span>(bouton) <span class="op">==</span> <span class="num">0</span> {
-            <span class="mod">gpio</span>.<span class="nat">write</span>(led, <span class="num">1</span>)
-        } <span class="kc">else</span> {
-            <span class="mod">gpio</span>.<span class="nat">write</span>(led, <span class="num">0</span>)
+        <span class="kc">while</span> <span class="bool">true</span> {
+            <span class="kc">if</span> <span class="mod">gpio</span>.<span class="nat">read</span>(bouton) <span class="op">==</span> <span class="num">0</span> {
+                <span class="mod">gpio</span>.<span class="nat">write</span>(led, <span class="num">1</span>)
+            } <span class="kc">else</span> {
+                <span class="mod">gpio</span>.<span class="nat">write</span>(led, <span class="num">0</span>)
+            }
+            <span class="bi">delay</span>(<span class="num">10</span>)
         }
-        <span class="bi">delay</span>(<span class="num">10</span>)
     }
 }</pre>
       <p>Bouton externe : un fil sur GPIO 4, l'autre sur GND, et <code>let bouton = 4</code>. Pas de résistance nécessaire grâce au mode 2.</p>
@@ -649,14 +867,17 @@ avant <span class="op">=</span> etat
 
       <h4><code>chili build</code> — compiler en bytecode</h4>
       <pre class="sh">chili build blink.chl</pre>
-      <pre class="out">blink.chl → blink.chlb (111 octets)</pre>
+      <pre class="out">blink.chl → blink.chlb (188 octets)</pre>
       <p>Inutile d'habitude : <code>push</code> compile tout seul. Autre nom de sortie : <code>chili build blink.chl -o clignote.chlb</code>.</p>
 
       <h4><code>chili dis</code> — afficher le bytecode</h4>
       <pre class="sh">chili dis blink.chl</pre>
-      <pre class="out">; 2 globale(s), 2 fonction(s), entrée = &lt;init&gt;, 75 octets de code
+      <pre class="out">; 2 globale(s), 3 fonction(s), 1 classe(s), entrée = &lt;init&gt;, 86 octets de code
 
-fn main  ; params=0 locals=0 max_stack=2
+class Main  ; 0 champ(s)
+  main           -&gt; Main.main
+
+function Main.main  ; params=1 locals=1 max_stack=2
   0000  GLOAD       0
   0003  PUSH8       1
   0005  CALL_NATIVE gpio.mode/2
@@ -670,7 +891,7 @@ fn main  ; params=0 locals=0 max_stack=2
 2
 ...
 75025
-58</pre>
+60</pre>
       <p>Les broches sont simulées (<code>[gpio] broche 2 = 1</code>). <strong>Ctrl+C</strong> pour arrêter.</p>
 
       <h3 id="cmd-carte">Avec la carte</h3>
@@ -680,10 +901,10 @@ fn main  ; params=0 locals=0 max_stack=2
   COM4     WCH CH340 (1A86:7523)  &lt;- carte ESP32 probable
 
 COM4 :
-  Firmware Chili : 0.1.3 (bytecode v1)
+  Firmware Chili : 0.2.0 (bytecode v2)
   Puce           : ESP32-D0WD-V3, 251 Ko de mémoire libre
   WiFi           : non configuré (chili wifi &lt;réseau&gt; &lt;mot de passe&gt;)
-  Programme      : 111 octets (crc 5e0c1f3a)
+  Programme      : 188 octets (crc 5e0c1f3a)
   État           : en cours d'exécution</pre>
       <p>La commande à lancer en premier quand quelque chose ne va pas. Puce USB non reconnue : <code>chili check-port COM4</code> force l'examen du port.</p>
 
@@ -692,7 +913,7 @@ COM4 :
 
       <h4><code>chili push</code> — envoyer et lancer</h4>
       <pre class="sh">chili push blink.chl</pre>
-      <pre class="out">Envoi de blink.chl (111 octets) vers COM4… ok (180 ms)
+      <pre class="out">Envoi de blink.chl (188 octets) vers COM4… ok (180 ms)
 Programme enregistré sur la carte et lancé. Il redémarrera tout seul à chaque mise sous tension.
 Sortie de la carte — Ctrl+C pour quitter (le programme continue de tourner).</pre>
       <ul>
@@ -816,15 +1037,18 @@ chili stop 192.168.1.42</pre>
       </ol>
 
       <h3>Le programme s'arrête sur une erreur</h3>
-      <pre class="out">[chili] erreur : division par zero (fonction f0, pc 0008)</pre>
+      <pre class="out">[chili] erreur : division par zero (dans Main.main, pc 0008)</pre>
       <p>Le programme a fait une opération impossible ; la carte fonctionne toujours. Lis le message (<a href="#lg-execution">liste des erreurs</a>), teste sur le PC avec <code>chili run</code>, corrige, puis <code>chili push</code>.</p>
 
       <h3>Firmware à mettre à jour</h3>
-      <pre class="out">  Firmware Chili : 0.1.2 (bytecode v1)
-                   une autre version (0.1.3) est disponible : chili flash
+      <pre class="out">  Firmware Chili : 0.1.3 (bytecode v1)
+                   une autre version (0.2.0) est disponible : chili flash
+
+COM4 : le firmware gère le bytecode v1, ce compilateur produit la v2.
+Mets le firmware à jour avec : chili flash
 
 COM4 : le firmware de la carte ne connaît pas « kill ». Mets-le à jour avec : chili flash</pre>
-      <p>Après une mise à jour de Chili : <code>chili flash</code> par USB, puis renvoie ton programme.</p>
+      <p>Après une mise à jour de Chili : <code>chili flash</code> par USB (ou le bandeau orange <strong>Mettre à jour</strong> de Chili Lab), puis renvoie ton programme. Obligatoire pour passer au firmware 0.2.0 : les programmes en <code>class Main</code> / <code>function</code> ne tournent pas sur un firmware plus ancien.</p>
 
       <h3>Autres cas</h3>
       <ul>
