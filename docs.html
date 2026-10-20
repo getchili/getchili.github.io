@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documentation — Chili</title>
+<meta name="description" content="Guide de Chili : installation, premiers pas avec l'ESP32, le langage, les fonctions natives, les commandes, le WiFi et le dépannage.">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0a09;
+    --bg-2: #171010;
+    --card: #1c1312;
+    --line: #2f211e;
+    --text: #f4ece6;
+    --muted: #b3a39b;
+    --red: #ff4d4d;
+    --red-2: #e5302a;
+    --orange: #ff9f1c;
+    --green: #5fd068;
+    --radius: 16px;
+    --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.65 Inter, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+  h1, h2, h3 { font-family: "Space Grotesk", Inter, sans-serif; line-height: 1.2; margin: 0; }
+  code, pre { font-family: var(--mono); }
+
+  /* Navigation (identique à l'accueil) */
+  nav { position: sticky; top: 0; z-index: 10; background: rgba(15, 10, 9, .8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+  nav .wrap { display: flex; align-items: center; gap: 28px; height: 64px; }
+  .brand { display: flex; align-items: center; gap: 10px; font: 700 20px "Space Grotesk", sans-serif; text-decoration: none; }
+  .brand img { width: 32px; height: 32px; }
+  nav .links { margin-left: auto; display: flex; gap: 24px; font-size: 15px; }
+  nav .links a { color: var(--muted); text-decoration: none; }
+  nav .links a:hover, nav .links a.on { color: var(--text); }
+
+  /* Mise en page : sommaire + contenu */
+  .doc { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 56px; padding-top: 48px; padding-bottom: 80px; }
+  .toc { position: sticky; top: 88px; align-self: start; max-height: calc(100vh - 104px); overflow-y: auto; font-size: 14.5px; padding-right: 8px; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+  .toc .t { font: 600 12px var(--mono); letter-spacing: 1.5px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; }
+  .toc ol { list-style: none; margin: 0; padding: 0; }
+  .toc li { margin: 2px 0; }
+  .toc a { display: block; padding: 4px 10px; border-radius: 8px; color: var(--muted); text-decoration: none; border-left: 2px solid transparent; }
+  .toc a:hover { color: var(--text); background: var(--bg-2); }
+  .toc > ol > li > a { color: var(--text); font-weight: 500; }
+  .toc ol ol { margin: 2px 0 8px 10px; font-size: 13.5px; }
+  .toc-m { display: none; }
+
+  /* Contenu */
+  main { min-width: 0; max-width: 820px; }
+  .intro h1 { font-size: clamp(34px, 5vw, 48px); letter-spacing: -1px; margin-bottom: 14px; }
+  .intro h1 em { font-style: normal; background: linear-gradient(90deg, var(--red), var(--orange)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .intro p { color: var(--muted); font-size: 18px; margin: 0 0 8px; }
+  article { padding-top: 56px; margin-top: 56px; border-top: 1px solid var(--line); }
+  .kicker { color: var(--red); font: 600 13px var(--mono); letter-spacing: 1.5px; text-transform: uppercase; }
+  article h2 { font-size: clamp(28px, 4vw, 36px); margin: 8px 0 18px; letter-spacing: -.6px; }
+  article h3 { font-size: 21px; margin: 40px 0 12px; }
+  article h4 { font: 600 16px Inter, sans-serif; margin: 28px 0 8px; }
+  p { margin: 0 0 14px; }
+  main ul, main ol { margin: 0 0 16px; padding-left: 24px; }
+  main li { margin: 4px 0; }
+  main li > pre { margin-top: 8px; }
+  strong { color: #fff; }
+  .lead { color: var(--muted); font-size: 17px; }
+  main a { color: var(--orange); text-decoration: none; }
+  main a:hover { text-decoration: underline; }
+  :not(pre) > code { background: var(--bg-2); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; font-size: .88em; overflow-wrap: anywhere; }
+
+  pre { margin: 0 0 18px; padding: 16px 18px; font-size: 13.5px; line-height: 1.65; overflow-x: auto; background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
+  pre.out { background: var(--bg-2); color: #d8ccc4; }
+  pre.out::before { content: "sortie"; display: block; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  pre.sh::before { content: "PowerShell"; display: block; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--green); margin-bottom: 6px; }
+  .kc { color: #ff4d4d; font-weight: 600; }
+  .kf { color: #ff7a59; font-weight: 600; font-style: italic; }
+  .fn { color: #ff9f1c; font-weight: 600; }
+  .lt { color: #ffb86b; font-style: italic; }
+  .nm { color: #ffd23f; font-weight: 600; }
+  .mod { color: #5fd068; font-weight: 600; }
+  .nat { color: #a8e6a1; }
+  .bi { color: #5fd068; font-style: italic; }
+  .num { color: #f15bb5; }
+  .bool { color: #c77dff; font-weight: 600; }
+  .cm { color: #7f9172; font-style: italic; }
+  .op { color: #ff8c69; }
+
+  .tbl { overflow-x: auto; margin: 0 0 20px; border: 1px solid var(--line); border-radius: 12px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { background: var(--bg-2); font-weight: 600; color: var(--muted); font-size: 13px; }
+  tr:last-child td { border-bottom: 0; }
+  td code { white-space: nowrap; }
+  td.wrap code, .tbl.err td code { white-space: normal; }
+
+  .note { background: rgba(255, 159, 28, .08); border: 1px solid rgba(255, 159, 28, .35); border-radius: 12px; padding: 14px 16px; margin: 0 0 18px; font-size: 15px; }
+  .note.ok { background: rgba(95, 208, 104, .08); border-color: rgba(95, 208, 104, .35); }
+  .note p:last-child { margin: 0; }
+  .yes { color: var(--green); font-weight: 600; }
+  .no { color: var(--red); font-weight: 600; }
+  .next { display: inline-block; margin-top: 8px; font-weight: 600; }
+
+  footer { border-top: 1px solid var(--line); padding: 36px 0; color: var(--muted); font-size: 14px; }
+  footer .wrap { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  footer img { width: 24px; height: 24px; }
+  footer .right { margin-left: auto; }
+
+  @media (max-width: 900px) {
+    .doc { grid-template-columns: 1fr; gap: 0; padding-top: 24px; }
+    .toc { display: none; }
+    .toc-m { display: block; background: var(--card); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 32px; }
+    .toc-m summary { cursor: pointer; padding: 12px 16px; font-weight: 600; list-style: none; display: flex; justify-content: space-between; }
+    .toc-m summary::-webkit-details-marker { display: none; }
+    .toc-m summary::after { content: "▾"; color: var(--red); }
+    .toc-m[open] summary::after { content: "▴"; }
+    .toc-m ol { list-style: none; margin: 0; padding: 0 8px 12px; }
+    .toc-m a { display: block; padding: 7px 10px; color: var(--muted); text-decoration: none; border-radius: 8px; }
+    .toc-m a:hover { background: var(--bg-2); color: var(--text); }
+    article { padding-top: 40px; margin-top: 40px; }
+  }
+  @media (max-width: 600px) {
+    .wrap { padding: 0 16px; }
+    nav .links a.hide-sm { display: none; }
+    nav .wrap { gap: 16px; }
+    nav .links { gap: 16px; }
+    pre { font-size: 12.5px; padding: 14px; }
+    th, td { padding: 8px 10px; font-size: 13.5px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="index.html"><img src="logo.svg" alt="">Chili</a>
+    <div class="links">
+      <a class="hide-sm" href="index.html">Accueil</a>
+      <a class="on" href="docs.html">Documentation</a>
+      <a href="https://github.com/getchili">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap doc">
+
+  <aside class="toc" aria-label="Sommaire">
+    <div class="t">Sommaire</div>
+    <ol>
+      <li><a href="#installation">Installation</a></li>
+      <li><a href="#premiers-pas">Premiers pas</a>
+        <ol>
+          <li><a href="#pp-brancher">Brancher la carte</a></li>
+          <li><a href="#pp-pilote">Pilote USB</a></li>
+          <li><a href="#pp-flash">Installer le firmware</a></li>
+          <li><a href="#pp-push">Premier programme</a></li>
+          <li><a href="#pp-exemples">Les exemples</a></li>
+        </ol>
+      </li>
+      <li><a href="#langage">Le langage</a>
+        <ol>
+          <li><a href="#lg-structure">Structure</a></li>
+          <li><a href="#lg-accolades">Règle des accolades</a></li>
+          <li><a href="#lg-nombres">Nombres</a></li>
+          <li><a href="#lg-variables">Variables</a></li>
+          <li><a href="#lg-operateurs">Opérateurs</a></li>
+          <li><a href="#lg-if">if / else</a></li>
+          <li><a href="#lg-while">while, break, continue</a></li>
+          <li><a href="#lg-fonctions">Fonctions</a></li>
+          <li><a href="#lg-erreurs">Erreurs fréquentes</a></li>
+        </ol>
+      </li>
+      <li><a href="#natives">Fonctions natives</a>
+        <ol>
+          <li><a href="#nat-temps">print, delay, millis</a></li>
+          <li><a href="#nat-gpio">Broches GPIO</a></li>
+          <li><a href="#nat-exemples">Exemples LED et bouton</a></li>
+        </ol>
+      </li>
+      <li><a href="#commandes">Commandes</a>
+        <ol>
+          <li><a href="#cmd-pc">Sur le PC</a></li>
+          <li><a href="#cmd-carte">Avec la carte</a></li>
+          <li><a href="#cmd-arret">stop, kill, start, erase</a></li>
+        </ol>
+      </li>
+      <li><a href="#wifi">WiFi</a></li>
+      <li><a href="#depannage">Dépannage</a></li>
+    </ol>
+  </aside>
+
+  <main>
+    <details class="toc-m">
+      <summary>Sommaire</summary>
+      <ol>
+        <li><a href="#installation">1. Installation</a></li>
+        <li><a href="#premiers-pas">2. Premiers pas</a></li>
+        <li><a href="#langage">3. Le langage</a></li>
+        <li><a href="#lg-erreurs">&nbsp;&nbsp;&nbsp;Erreurs fréquentes</a></li>
+        <li><a href="#natives">4. Fonctions natives</a></li>
+        <li><a href="#commandes">5. Commandes</a></li>
+        <li><a href="#wifi">6. WiFi</a></li>
+        <li><a href="#depannage">7. Dépannage</a></li>
+      </ol>
+    </details>
+
+    <div class="intro">
+      <h1>Guide de <em>Chili</em></h1>
+      <p>Tu écris ton programme sur ton PC, tu l'envoies à ton ESP32 en une commande, par USB ou WiFi, et il tourne. Pas besoin de reflasher la carte à chaque modification.</p>
+      <p>Il te faut un PC sous Windows 10 ou 11, une carte ESP32 classique (type « ESP32 DevKit ») et un câble USB de données.</p>
+    </div>
+    <pre class="sh">chili check-port                <span class="cm"># détecte la carte</span>
+chili flash                     <span class="cm"># installe le firmware Chili (une seule fois)</span>
+chili push examples\blink.chl   <span class="cm"># envoie et lance un programme</span></pre>
+    <div class="note"><p>Un tableau de bord graphique (<code>chili ui</code>) arrive bientôt, pour faire tout ça sans taper de commandes.</p></div>
+
+    <!-- ================================================================ -->
+    <article id="installation">
+      <div class="kicker">Étape 1</div>
+      <h2>Installation</h2>
+      <p class="lead">Un seul fichier, sans droits administrateur. Il contient le compilateur, le firmware de la carte et les exemples.</p>
+
+      <ol>
+        <li>Télécharge <strong>ChiliSetup-x.y.z.exe</strong> (par exemple <code>ChiliSetup-0.1.0.exe</code>) sur <a href="https://github.com/getchili/chili/releases/latest">la page des versions</a>.</li>
+        <li>Double-clique dessus.</li>
+        <li>Si Windows affiche <strong>« Windows a protégé votre ordinateur »</strong> (SmartScreen) : clique sur <strong>Informations complémentaires</strong>, puis <strong>Exécuter quand même</strong>. Ce message apparaît pour tout programme récent non signé ; il ne signale pas un virus.</li>
+        <li>Laisse les options cochées, surtout <strong>Ajouter chili au PATH</strong> (c'est ce qui permet de taper <code>chili</code> dans un terminal). L'extension VS Code n'est proposée que si VS Code est installé.</li>
+        <li>Clique sur <strong>Installer</strong>, puis <strong>Terminer</strong>.</li>
+      </ol>
+      <p>Chili est installé dans <code>%LOCALAPPDATA%\Programs\Chili</code> : <code>bin\chili.exe</code> et les exemples dans <code>examples\</code>.</p>
+
+      <h3>Vérifier</h3>
+      <ol>
+        <li>Ouvre un <strong>nouveau</strong> terminal : menu Démarrer → tape <code>PowerShell</code> → Entrée. Un terminal ouvert avant l'installation ne connaît pas encore la commande.</li>
+        <li>Tape :</li>
+      </ol>
+      <pre class="sh">chili version</pre>
+      <pre class="out">chili 0.1.0 (firmware ESP32 embarqué : 0.1.2, bytecode v1)</pre>
+      <p>Si tu vois <code>chili : Le terme «chili» n'est pas reconnu…</code>, ouvre un nouveau terminal. Sinon, relance l'installateur avec <strong>Ajouter chili au PATH</strong> coché.</p>
+
+      <h3>Mettre à jour, désinstaller</h3>
+      <ul>
+        <li><strong>Mise à jour</strong> : lance l'installateur de la nouvelle version, puis <code>chili flash</code> pour mettre à jour le firmware de la carte.</li>
+        <li><strong>Désinstallation</strong> : Paramètres Windows → Applications → Applications installées → Chili → Désinstaller.</li>
+      </ul>
+    </article>
+
+    <!-- ================================================================ -->
+    <article id="premiers-pas">
+      <div class="kicker">Étape 2</div>
+      <h2>Premiers pas : faire clignoter la LED</h2>
+      <p class="lead">Brancher l'ESP32, y installer le firmware Chili, puis envoyer un programme qui fait clignoter sa LED bleue. Compte 5 minutes.</p>
+
+      <h3 id="pp-brancher">1. Brancher la carte</h3>
+      <p>Branche l'ESP32 avec un <strong>câble USB de données</strong>. Beaucoup de câbles (écouteurs, batteries) ne font que <strong>charger</strong> : la carte s'allume mais le PC ne la voit pas. Si rien n'est détecté, change d'abord de câble.</p>
+
+      <h3 id="pp-pilote">2. Installer le pilote USB (si besoin)</h3>
+      <p>Windows 10/11 l'installe souvent tout seul. Sinon, regarde le nom de la puce écrite près du port USB de la carte :</p>
+      <div class="tbl"><table>
+        <tr><th>Puce</th><th>Pilote</th></tr>
+        <tr><td><strong>CH340</strong>, CH9102</td><td class="wrap"><a href="https://www.wch-ic.com/downloads/CH341SER_EXE.html">CH341SER (WCH)</a></td></tr>
+        <tr><td><strong>CP2102</strong>, CP2104 (CP210x)</td><td class="wrap"><a href="https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers">CP210x VCP (Silicon Labs)</a></td></tr>
+      </table></div>
+      <p>Débranche et rebranche la carte après l'installation.</p>
+
+      <h3>3. Détecter la carte</h3>
+      <pre class="sh">chili check-port</pre>
+      <pre class="out">Ports série :
+  COM4     WCH CH340 (1A86:7523)  &lt;- carte ESP32 probable
+
+COM4 :
+  Firmware Chili : absent
+  Puce           : ESP32  (MAC 08:3a:f2:12:34:56)
+
+  La carte est prête à recevoir le firmware Chili :
+    chili flash COM4</pre>
+      <p>Le port (<code>COM4</code> ici) peut être différent chez toi. Avec une seule carte branchée, <code>chili</code> la trouve seul. Sortie différente ? Voir <a href="#depannage">Dépannage</a>.</p>
+
+      <h3 id="pp-flash">4. Installer le firmware Chili</h3>
+      <p>Le firmware est le programme qui reste sur la carte et exécute tes programmes Chili. On l'installe <strong>une fois par carte</strong> (et après chaque mise à jour de Chili).</p>
+      <pre class="sh">chili flash</pre>
+      <pre class="out">Installation du firmware Chili 0.1.2 sur COM4.
+Ne débranche pas la carte pendant l'opération.
+
+  [##############################] 100 %  firmware.bin
+
+Firmware écrit et vérifié en 28 s. Redémarrage de la carte…
+Firmware Chili 0.1.2 opérationnel sur ESP32-D0WD-V3.</pre>
+      <p>Si la carte « ne passe pas en mode programmation automatiquement » :</p>
+      <ol>
+        <li>maintiens le bouton <strong>BOOT</strong> enfoncé ;</li>
+        <li>appuie une fois sur <strong>EN</strong> (ou <strong>RST</strong>) ;</li>
+        <li>relâche <strong>BOOT</strong> ;</li>
+        <li>relance <code>chili flash</code>.</li>
+      </ol>
+
+      <h3 id="pp-push">5. Envoyer ton premier programme</h3>
+      <p>Copie d'abord les exemples dans tes Documents pour pouvoir les modifier, puis va dans ce dossier :</p>
+      <pre class="sh">Copy-Item "$env:LOCALAPPDATA\Programs\Chili\examples" "$HOME\Documents\chili" -Recurse
+cd "$HOME\Documents\chili"</pre>
+      <pre class="sh">chili push blink.chl</pre>
+      <pre class="out">Envoi de blink.chl (111 octets) vers COM4… ok (180 ms)
+Programme enregistré sur la carte et lancé. Il redémarrera tout seul à chaque mise sous tension.
+Sortie de la carte — Ctrl+C pour quitter (le programme continue de tourner).</pre>
+      <div class="note ok"><p>La LED bleue clignote. 🎉 <strong>Ctrl+C</strong> ferme l'affichage, mais le programme continue de tourner. Il est enregistré sur la carte : débranche-la, rebranche-la (même sur un chargeur), il repart tout seul.</p></div>
+      <p>Pas de LED sur la broche 2 ? Branche une LED et une résistance de 220 Ω entre <strong>GPIO 2</strong> et <strong>GND</strong>.</p>
+
+      <h4>Modifier le programme</h4>
+      <ol>
+        <li>Ouvre <code>blink.chl</code> dans VS Code ou le Bloc-notes.</li>
+        <li>Remplace <code>let period = 500</code> par <code>let period = 100</code> et enregistre.</li>
+        <li>Relance <code>chili push blink.chl</code> : la LED clignote plus vite. L'envoi prend moins d'une seconde.</li>
+      </ol>
+
+      <h3 id="pp-exemples">Les exemples fournis</h3>
+      <div class="tbl"><table>
+        <tr><th>Fichier</th><th>Ce qu'il fait</th></tr>
+        <tr><td><code>blink.chl</code></td><td>fait clignoter la LED (GPIO 2)</td></tr>
+        <tr><td><code>bouton.chl</code></td><td>allume la LED tant qu'on appuie sur le bouton <strong>BOOT</strong> (GPIO 0)</td></tr>
+        <tr><td><code>compteur.chl</code></td><td>compte les appuis sur BOOT et affiche le total avec <code>print</code></td></tr>
+        <tr><td><code>sos.chl</code></td><td>« SOS » en morse sur la LED, découpé en fonctions</td></tr>
+        <tr><td><code>fib.chl</code></td><td>suite de Fibonacci et mesure du temps de calcul</td></tr>
+      </table></div>
+      <p>Essaie <code>chili push compteur.chl</code> puis appuie sur BOOT : <code>1</code>, <code>2</code>, <code>3</code>… s'affichent.</p>
+    </article>
+
+    <!-- ================================================================ -->
+    <article id="langage">
+      <div class="kicker">Référence</div>
+      <h2>Le langage</h2>
+      <p class="lead">Chili est volontairement petit : des entiers, des variables, des fonctions, des conditions et des boucles.</p>
+      <p>Pour tester sans carte :</p>
+      <pre class="sh">chili check mon_programme.chl   <span class="cm"># vérifie qu'il n'y a pas d'erreur</span>
+chili run mon_programme.chl     <span class="cm"># l'exécute sur le PC (broches simulées)</span></pre>
+
+      <h3 id="lg-structure">Structure d'un programme</h3>
+      <p>Un fichier <code>.chl</code> contient des <strong>fonctions</strong> et des <strong>variables globales</strong>. Il doit avoir une fonction <code>main</code>, lancée au démarrage.</p>
+<pre><span class="cm">// blink.chl — fait clignoter la LED de la carte</span>
+<span class="lt">let</span> led <span class="op">=</span> <span class="num">2</span>          <span class="cm">// variable globale</span>
+
+<span class="fn">fn</span> <span class="nm">main</span>() {
+    <span class="mod">gpio</span>.<span class="nat">mode</span>(led, <span class="num">1</span>)
+    <span class="kc">while</span> <span class="bool">true</span> {
+        <span class="mod">gpio</span>.<span class="nat">write</span>(led, <span class="num">1</span>)
+        <span class="bi">delay</span>(<span class="num">500</span>)
+        <span class="mod">gpio</span>.<span class="nat">write</span>(led, <span class="num">0</span>)
+        <span class="bi">delay</span>(<span class="num">500</span>)
+    }
+}</pre>
+      <ul>
+        <li><code>//</code> commence un commentaire jusqu'à la fin de la ligne.</li>
+        <li><strong>Pas de point-virgule</strong> en fin de ligne : Chili les ajoute tout seul. On n'en met que pour deux instructions sur une ligne : <code>gpio.write(2, 1); delay(100)</code>.</li>
+        <li>L'indentation est libre (4 espaces est l'usage).</li>
+      </ul>
+
+      <h3 id="lg-accolades">La règle d'or : l'accolade sur la même ligne</h3>
+      <p>L'accolade <code>{</code> doit être <strong>sur la même ligne</strong> que <code>fn</code>, <code>if</code>, <code>else</code> ou <code>while</code>. Et <code>else</code> se met sur la même ligne que le <code>}</code> qui le précède.</p>
+<pre><span class="cm yes">// ✅ correct</span>
+<span class="kc">if</span> x <span class="op">&gt;</span> <span class="num">0</span> {
+    <span class="bi">print</span>(x)
+} <span class="kc">else</span> {
+    <span class="bi">print</span>(<span class="num">0</span>)
+}
+
+<span class="cm no">// ❌ incorrect</span>
+<span class="kc">if</span> x <span class="op">&gt;</span> <span class="num">0</span>
+{
+    <span class="bi">print</span>(x)
+}
+<span class="kc">else</span> {
+    <span class="bi">print</span>(<span class="num">0</span>)
+}</pre>
+      <p>Pourquoi : Chili ajoute un point-virgule invisible en fin de ligne quand elle se termine par un nom, un nombre, <code>)</code> ou <code>}</code>. <code>if x &gt; 0</code> suivi d'un retour à la ligne devient <code>if x &gt; 0;</code>.</p>
+
+      <h3 id="lg-nombres">Nombres</h3>
+      <p>Un seul type : l'<strong>entier signé 32 bits</strong>, de <strong>-2 147 483 648</strong> à <strong>2 147 483 647</strong>. Pas de nombres à virgule ni de texte pour l'instant.</p>
+      <div class="tbl"><table>
+        <tr><th>Écriture</th><th>Valeur</th><th>Remarque</th></tr>
+        <tr><td><code>42</code></td><td>42</td><td>décimal</td></tr>
+        <tr><td><code>0x2A</code></td><td>42</td><td>hexadécimal</td></tr>
+        <tr><td><code>0b101010</code></td><td>42</td><td>binaire</td></tr>
+        <tr><td><code>1_000_000</code></td><td>1000000</td><td><code>_</code> est un séparateur ignoré</td></tr>
+        <tr><td><code>true</code> / <code>false</code></td><td>1 / 0</td><td></td></tr>
+      </table></div>
+      <ul>
+        <li><strong>Débordement</strong> : les calculs font le tour, <code>2147483647 + 1</code> donne <code>-2147483648</code>.</li>
+        <li><strong>Division entière</strong> : <code>7 / 2</code> vaut <code>3</code>, <code>-7 / 2</code> vaut <code>-3</code>, <code>-7 % 2</code> vaut <code>-1</code>.</li>
+        <li><strong>Division par zéro</strong> : erreur d'exécution, le programme s'arrête (pas la carte).</li>
+        <li><strong>Vrai / faux</strong> : <code>0</code> est faux, toute autre valeur est vraie. Les comparaisons renvoient <code>1</code> ou <code>0</code>.</li>
+      </ul>
+
+      <h3 id="lg-variables">Variables</h3>
+      <p>On déclare avec <code>let</code> et une valeur de départ (obligatoire), puis on modifie avec <code>=</code>, <code>+=</code>, <code>-=</code>, <code>*=</code>, <code>/=</code>, <code>%=</code>. Pas de <code>++</code> : écris <code>i += 1</code>.</p>
+<pre><span class="lt">let</span> vitesse <span class="op">=</span> <span class="num">100</span>
+vitesse <span class="op">=</span> <span class="num">200</span>
+vitesse <span class="op">+=</span> <span class="num">10</span>   <span class="cm">// vitesse = vitesse + 10</span></pre>
+      <ul>
+        <li>Déclarée <strong>hors de toute fonction</strong> : variable <strong>globale</strong>, visible partout, initialisée avant <code>main</code> dans l'ordre du fichier.</li>
+        <li>Déclarée <strong>dans un bloc</strong> <code>{ … }</code> : <strong>locale</strong> à ce bloc.</li>
+        <li>Pas deux <code>let</code> du même nom dans un bloc. Dans un bloc imbriqué, un nouveau <code>let</code> <strong>masque</strong> l'ancienne variable jusqu'à la fin du bloc.</li>
+      </ul>
+<pre><span class="lt">let</span> compte <span class="op">=</span> <span class="num">0</span>          <span class="cm">// globale</span>
+
+<span class="fn">fn</span> <span class="nm">ajoute</span>() {
+    compte <span class="op">+=</span> <span class="num">1</span>         <span class="cm">// modifie la globale</span>
+}
+
+<span class="fn">fn</span> <span class="nm">main</span>() {
+    ajoute()
+    <span class="bi">print</span>(compte)       <span class="cm">// 1</span>
+    <span class="kc">if</span> <span class="bool">true</span> {
+        <span class="lt">let</span> compte <span class="op">=</span> <span class="num">99</span> <span class="cm">// locale au bloc</span>
+        <span class="bi">print</span>(compte)   <span class="cm">// 99</span>
+    }
+    <span class="bi">print</span>(compte)       <span class="cm">// 1</span>
+}</pre>
+      <p><strong>Noms</strong> : une lettre ou <code>_</code>, puis lettres, chiffres ou <code>_</code>, sans accents. Interdits : les mots-clés (<code>fn let if else while return break continue true false</code>) et les natives (<code>print</code>, <code>delay</code>, <code>millis</code>, <code>gpio</code>).</p>
+
+      <h3 id="lg-operateurs">Opérateurs</h3>
+      <p>Du plus prioritaire au moins prioritaire :</p>
+      <div class="tbl"><table>
+        <tr><th>Opérateurs</th><th>Signification</th></tr>
+        <tr><td><code>-x</code> <code>!x</code> <code>~x</code></td><td>opposé, non logique, inversion des bits</td></tr>
+        <tr><td><code>*</code> <code>/</code> <code>%</code></td><td>multiplication, division entière, reste</td></tr>
+        <tr><td><code>+</code> <code>-</code></td><td>addition, soustraction</td></tr>
+        <tr><td><code>&lt;&lt;</code> <code>&gt;&gt;</code></td><td>décalage de bits</td></tr>
+        <tr><td><code>&amp;</code></td><td>ET bit à bit</td></tr>
+        <tr><td><code>^</code></td><td>OU exclusif bit à bit</td></tr>
+        <tr><td><code>|</code></td><td>OU bit à bit</td></tr>
+        <tr><td><code>&lt;</code> <code>&lt;=</code> <code>&gt;</code> <code>&gt;=</code></td><td>comparaisons</td></tr>
+        <tr><td><code>==</code> <code>!=</code></td><td>égal, différent</td></tr>
+        <tr><td><code>&amp;&amp;</code></td><td>ET logique</td></tr>
+        <tr><td><code>||</code></td><td>OU logique</td></tr>
+      </table></div>
+      <p><code>&amp;&amp;</code> et <code>||</code> s'arrêtent dès que le résultat est connu (dans <code>b != 0 &amp;&amp; a / b &gt; 2</code>, pas de division si <code>b</code> vaut 0) et renvoient 1 ou 0. En cas de doute, mets des parenthèses.</p>
+<pre><span class="bi">print</span>(<span class="num">1</span> <span class="op">&lt;&lt;</span> <span class="num">4</span>)            <span class="cm">// 16</span>
+<span class="bi">print</span>(<span class="num">0b1100</span> <span class="op">&amp;</span> <span class="num">0b1010</span>)   <span class="cm">// 8</span>
+<span class="bi">print</span>(<span class="num">0b1100</span> <span class="op">|</span> <span class="num">0b1010</span>)   <span class="cm">// 14</span>
+<span class="bi">print</span>(<span class="num">5</span> <span class="op">&gt;</span> <span class="num">3</span> <span class="op">&amp;&amp;</span> <span class="num">2</span> <span class="op">&gt;</span> <span class="num">1</span>)    <span class="cm">// 1</span></pre>
+
+      <h3 id="lg-if">Conditions : if / else</h3>
+<pre><span class="kc">if</span> temperature <span class="op">&gt;</span> <span class="num">30</span> {
+    <span class="mod">gpio</span>.<span class="nat">write</span>(ventilo, <span class="num">1</span>)
+} <span class="kc">else if</span> temperature <span class="op">&lt;</span> <span class="num">25</span> {
+    <span class="mod">gpio</span>.<span class="nat">write</span>(ventilo, <span class="num">0</span>)
+} <span class="kc">else</span> {
+    <span class="cm">// rien à faire</span>
+}</pre>
+      <p>Pas besoin de parenthèses autour de la condition (elles sont permises). Les accolades sont obligatoires.</p>
+
+      <h3 id="lg-while">Boucles : while, break, continue</h3>
+      <p>Une seule boucle, <code>while</code> (pas de <code>for</code>). <code>break</code> sort de la boucle, <code>continue</code> passe au tour suivant.</p>
+<pre><span class="lt">let</span> i <span class="op">=</span> <span class="num">0</span>
+<span class="kc">while</span> <span class="bool">true</span> {
+    i <span class="op">+=</span> <span class="num">1</span>
+    <span class="kc">if</span> i <span class="op">%</span> <span class="num">2</span> <span class="op">==</span> <span class="num">0</span> {
+        <span class="kf">continue</span>     <span class="cm">// saute les nombres pairs</span>
+    }
+    <span class="kc">if</span> i <span class="op">&gt;</span> <span class="num">9</span> {
+        <span class="kf">break</span>        <span class="cm">// on s'arrête après 9</span>
+    }
+    <span class="bi">print</span>(i)         <span class="cm">// 1 3 5 7 9</span>
+}</pre>
+
+      <h3 id="lg-fonctions">Fonctions</h3>
+<pre><span class="fn">fn</span> <span class="nm">carre</span>(n) {
+    <span class="kf">return</span> n <span class="op">*</span> n
+}
+
+<span class="fn">fn</span> <span class="nm">fib</span>(n) {
+    <span class="kc">if</span> n <span class="op">&lt;</span> <span class="num">2</span> {
+        <span class="kf">return</span> n
+    }
+    <span class="kf">return</span> fib(n <span class="op">-</span> <span class="num">1</span>) <span class="op">+</span> fib(n <span class="op">-</span> <span class="num">2</span>)
+}</pre>
+      <ul>
+        <li>Zéro, un ou plusieurs paramètres, séparés par des virgules.</li>
+        <li>Une fonction renvoie <strong>toujours un entier</strong> : la valeur du <code>return</code>, ou <code>0</code>.</li>
+        <li>On peut l'appeler <strong>avant</strong> sa définition dans le fichier. La récursion est permise.</li>
+        <li><code>main</code> n'a pas de paramètres.</li>
+        <li>Une instruction seule doit être un appel : <code>carre(3)</code> est permis, <code>x + 1</code> seul ne l'est pas.</li>
+      </ul>
+
+      <h3 id="lg-erreurs">Erreurs fréquentes</h3>
+      <p><code>chili check</code> (et <code>chili push</code>, qui vérifie avant d'envoyer) affiche <code>fichier:ligne:colonne: message</code>.</p>
+      <div class="tbl err"><table>
+        <tr><th>Message</th><th>Correction</th></tr>
+        <tr><td><code>'{' attendu, trouvé fin de ligne</code></td><td>remonte <code>{</code> sur la ligne du <code>fn</code> / <code>if</code> / <code>while</code></td></tr>
+        <tr><td><code>expression attendue, trouvé 'else'</code></td><td>écris <code>} else {</code> sur une seule ligne</td></tr>
+        <tr><td><code>'x' n'est pas déclaré</code></td><td>ajoute <code>let x = …</code> avant, ou corrige la faute de frappe</td></tr>
+        <tr><td><code>fonction 'foo' non déclarée</code></td><td>vérifie le nom, ou définis <code>fn foo()</code></td></tr>
+        <tr><td><code>'a' est déjà déclaré dans cette portée (variable locale, ligne 2)</code></td><td>la 2<sup>e</sup> fois, écris <code>a = 2</code> sans <code>let</code></td></tr>
+        <tr><td><code>'=' attendu, trouvé fin de ligne</code></td><td><code>let x</code> sans valeur : écris <code>let x = 0</code></td></tr>
+        <tr><td><code>delay attend 1 argument(s), 2 fourni(s)</code></td><td>mauvais nombre d'arguments : voir <a href="#natives">les natives</a></td></tr>
+        <tr><td><code>le module 'gpio' n'a pas de fonction 'blink'</code></td><td>natives : <code>gpio.mode</code>, <code>gpio.write</code>, <code>gpio.read</code></td></tr>
+        <tr><td><code>'delay' est une fonction native, ce nom est réservé</code></td><td>choisis un autre nom de variable</td></tr>
+        <tr><td><code>le programme doit définir fn main()</code></td><td>ajoute <code>fn main() { … }</code></td></tr>
+        <tr><td><code>main ne doit pas avoir de paramètres (1 trouvés)</code></td><td>écris <code>fn main()</code></td></tr>
+        <tr><td><code>'break' en dehors d'une boucle</code></td><td>mets-le dans un <code>while</code>, ou utilise <code>return</code></td></tr>
+        <tr><td><code>expression attendue, trouvé '+'</code></td><td><code>x++</code> n'existe pas : <code>x += 1</code></td></tr>
+        <tr><td><code>')' attendu, trouvé fin de ligne</code></td><td>ferme la parenthèse</td></tr>
+        <tr><td><code>'}' attendu, trouvé fin de fichier</code></td><td>ajoute l'accolade fermante oubliée</td></tr>
+        <tr><td><code>fin d'instruction attendue, trouvé identifiant 'print'</code></td><td>deux instructions sur une ligne : va à la ligne ou sépare par <code>;</code></td></tr>
+        <tr><td><code>caractère inattendu '"'</code></td><td>pas encore de texte : <code>print</code> n'affiche que des nombres</td></tr>
+        <tr><td><code>on ne peut affecter qu'une variable</code></td><td>à gauche de <code>=</code>, un nom de variable</td></tr>
+        <tr><td><code>expression inutilisée : seul un appel de fonction peut servir d'instruction</code></td><td>souvent un <code>for</code> : utilise <code>while</code></td></tr>
+      </table></div>
+
+      <h4 id="lg-execution">Erreurs d'exécution</h4>
+      <p>Elles arrivent pendant que le programme tourne ; il s'arrête et le message s'affiche :</p>
+      <pre class="out">erreur d'exécution dans main (pc 0008) : division par zéro       <span class="cm">← chili run (PC)</span>
+[chili] erreur : division par zero (fonction f0, pc 0008)        <span class="cm">← carte</span></pre>
+      <div class="tbl err"><table>
+        <tr><th>Message</th><th>Cause</th></tr>
+        <tr><td><code>division par zéro</code> / <code>modulo par zéro</code></td><td><code>/</code> ou <code>%</code> par 0</td></tr>
+        <tr><td><code>trop d'appels imbriqués (récursion trop profonde ?)</code></td><td>une fonction s'appelle sans fin</td></tr>
+        <tr><td><code>gpio.mode : broche 99 invalide</code></td><td>broche inexistante sur l'ESP32</td></tr>
+        <tr><td><code>gpio.mode : la broche 34 ne peut pas etre une sortie</code></td><td>broches 34 à 39 : entrée seulement</td></tr>
+        <tr><td><code>gpio.mode : mode 4 inconnu (0 a 3)</code></td><td>mode autre que 0, 1, 2, 3</td></tr>
+      </table></div>
+    </article>
+
+    <!-- ================================================================ -->
+    <article id="natives">
+      <div class="kicker">Référence</div>
+      <h2>Fonctions natives</h2>
+      <p class="lead">Fournies par la carte, elles s'appellent comme les autres fonctions. Leurs noms sont réservés.</p>
+      <div class="tbl"><table>
+        <tr><th>Fonction</th><th>Renvoie</th><th>Effet</th></tr>
+        <tr><td><code>print(v)</code></td><td>0</td><td>affiche le nombre sur une ligne</td></tr>
+        <tr><td><code>delay(ms)</code></td><td>0</td><td>attend <code>ms</code> millisecondes</td></tr>
+        <tr><td><code>millis()</code></td><td>ms</td><td>temps écoulé depuis le démarrage de la carte</td></tr>
+        <tr><td><code>gpio.mode(p, m)</code></td><td>0</td><td>règle la broche <code>p</code> en entrée ou en sortie (mode 0 à 3)</td></tr>
+        <tr><td><code>gpio.write(p, v)</code></td><td>0</td><td>sortie à 3,3 V (<code>v</code> non nul) ou à 0 V (<code>v</code> = 0)</td></tr>
+        <tr><td><code>gpio.read(p)</code></td><td>0 ou 1</td><td>lit l'état de la broche</td></tr>
+      </table></div>
+
+      <h3 id="nat-temps">print, delay, millis</h3>
+      <ul>
+        <li><code>print(v)</code> affiche un entier ; la sortie apparaît pendant <code>chili push</code> ou avec <code>chili monitor</code>. Pas encore de texte.</li>
+        <li><code>delay(ms)</code> : 1000 = 1 seconde. Une valeur nulle ou négative ne fait rien. Pendant un <code>delay</code>, la carte continue de répondre aux commandes.</li>
+        <li><code>millis()</code> sert à mesurer une durée, ou à faire une action régulière sans bloquer le reste du programme :</li>
+      </ul>
+<pre><span class="lt">let</span> prochain <span class="op">=</span> <span class="bi">millis</span>() <span class="op">+</span> <span class="num">1000</span>
+<span class="kc">while</span> <span class="bool">true</span> {
+    <span class="kc">if</span> <span class="bi">millis</span>() <span class="op">-</span> prochain <span class="op">&gt;=</span> <span class="num">0</span> {
+        <span class="bi">print</span>(<span class="bi">millis</span>())       <span class="cm">// toutes les secondes</span>
+        prochain <span class="op">+=</span> <span class="num">1000</span>
+    }
+    <span class="bi">delay</span>(<span class="num">10</span>)
+}</pre>
+      <p>Le compteur de <code>millis()</code> dépasse la limite des entiers 32 bits au bout d'environ 24 jours : compare toujours une <strong>différence</strong> (<code>millis() - prochain &gt;= 0</code>), qui reste juste au passage de la limite.</p>
+
+      <h3 id="nat-gpio">Broches GPIO</h3>
+      <p>Utilise le <strong>numéro GPIO</strong> de la broche (sérigraphié <code>D2</code>, <code>GPIO2</code>, <code>IO2</code> ou <code>2</code>). Appelle <code>gpio.mode</code> une fois au début pour chaque broche.</p>
+      <div class="tbl"><table>
+        <tr><th>Mode</th><th>Nom</th><th>Usage</th></tr>
+        <tr><td><code>0</code></td><td>entrée</td><td>signal toujours à 0 ou 1 (capteur, autre carte)</td></tr>
+        <tr><td><code>1</code></td><td>sortie</td><td>LED, relais, buzzer…</td></tr>
+        <tr><td><code>2</code></td><td>entrée + pull-up</td><td>bouton entre la broche et <strong>GND</strong> : 1 relâché, 0 appuyé</td></tr>
+        <tr><td><code>3</code></td><td>entrée + pull-down</td><td>bouton entre la broche et <strong>3,3 V</strong> : 0 relâché, 1 appuyé</td></tr>
+      </table></div>
+      <div class="tbl"><table>
+        <tr><th>Broches ESP32</th><th>Remarque</th></tr>
+        <tr><td><strong>2</strong></td><td>LED intégrée sur la plupart des cartes</td></tr>
+        <tr><td><strong>0</strong></td><td>bouton <strong>BOOT</strong> intégré (lit 0 quand on appuie)</td></tr>
+        <tr><td class="wrap">4, 5, 13, 14, 16–19, 21–23, 25–27, 32, 33</td><td>libres, entrée ou sortie : à préférer</td></tr>
+        <tr><td>34 à 39</td><td><strong>entrée seulement</strong>, sans pull-up/pull-down interne</td></tr>
+        <tr><td>6 à 11</td><td><strong>ne pas utiliser</strong> : reliées à la mémoire flash</td></tr>
+        <tr><td>1 et 3</td><td>liaison USB avec le PC : à ne pas utiliser</td></tr>
+        <tr><td>12 et 15</td><td>influencent le démarrage : à éviter pour débuter</td></tr>
+      </table></div>
+      <p>Quand le programme s'arrête (<code>stop</code>, <code>kill</code>, nouveau <code>push</code>), ses sorties sont remises à 0 : LED et relais s'éteignent.</p>
+
+      <h3 id="nat-exemples">Exemples LED et bouton</h3>
+      <h4>LED externe</h4>
+      <p>GPIO 4 → résistance 220 Ω → patte longue de la LED ; patte courte → GND.</p>
+<pre><span class="lt">let</span> led <span class="op">=</span> <span class="num">4</span>
+
+<span class="fn">fn</span> <span class="nm">main</span>() {
+    <span class="mod">gpio</span>.<span class="nat">mode</span>(led, <span class="num">1</span>)       <span class="cm">// sortie</span>
+    <span class="kc">while</span> <span class="bool">true</span> {
+        <span class="mod">gpio</span>.<span class="nat">write</span>(led, <span class="num">1</span>)  <span class="cm">// allumée</span>
+        <span class="bi">delay</span>(<span class="num">200</span>)
+        <span class="mod">gpio</span>.<span class="nat">write</span>(led, <span class="num">0</span>)  <span class="cm">// éteinte</span>
+        <span class="bi">delay</span>(<span class="num">800</span>)
+    }
+}</pre>
+      <h4>Bouton BOOT → LED (<code>bouton.chl</code>)</h4>
+<pre><span class="lt">let</span> bouton <span class="op">=</span> <span class="num">0</span>
+<span class="lt">let</span> led <span class="op">=</span> <span class="num">2</span>
+
+<span class="fn">fn</span> <span class="nm">main</span>() {
+    <span class="mod">gpio</span>.<span class="nat">mode</span>(bouton, <span class="num">2</span>) <span class="cm">// entrée avec pull-up</span>
+    <span class="mod">gpio</span>.<span class="nat">mode</span>(led, <span class="num">1</span>)    <span class="cm">// sortie</span>
+
+    <span class="kc">while</span> <span class="bool">true</span> {
+        <span class="kc">if</span> <span class="mod">gpio</span>.<span class="nat">read</span>(bouton) <span class="op">==</span> <span class="num">0</span> {
+            <span class="mod">gpio</span>.<span class="nat">write</span>(led, <span class="num">1</span>)
+        } <span class="kc">else</span> {
+            <span class="mod">gpio</span>.<span class="nat">write</span>(led, <span class="num">0</span>)
+        }
+        <span class="bi">delay</span>(<span class="num">10</span>)
+    }
+}</pre>
+      <p>Bouton externe : un fil sur GPIO 4, l'autre sur GND, et <code>let bouton = 4</code>. Pas de résistance nécessaire grâce au mode 2.</p>
+      <h4>Compter les appuis (<code>compteur.chl</code>)</h4>
+      <p>Pour détecter <strong>un appui</strong>, on compare avec l'état précédent :</p>
+<pre><span class="lt">let</span> etat <span class="op">=</span> <span class="mod">gpio</span>.<span class="nat">read</span>(bouton)
+<span class="kc">if</span> avant <span class="op">==</span> <span class="num">1</span> <span class="op">&amp;&amp;</span> etat <span class="op">==</span> <span class="num">0</span> {   <span class="cm">// passage relâché → appuyé</span>
+    appuis <span class="op">+=</span> <span class="num">1</span>
+    <span class="bi">print</span>(appuis)
+}
+avant <span class="op">=</span> etat
+<span class="bi">delay</span>(<span class="num">20</span>)   <span class="cm">// évite de compter les rebonds du bouton</span></pre>
+      <p>Avec <code>chili run</code>, les broches sont simulées : <code>gpio.write</code> affiche <code>[gpio] broche 2 = 1</code> et <code>gpio.read</code> renvoie la dernière valeur écrite (0 au départ).</p>
+    </article>
+
+    <!-- ================================================================ -->
+    <article id="commandes">
+      <div class="kicker">Référence</div>
+      <h2>Les commandes</h2>
+      <p class="lead">Toutes se tapent dans un terminal : <code>chili &lt;commande&gt; [fichier] [cible]</code>. <code>chili</code> seul affiche la liste.</p>
+      <p><strong>La cible</strong> (facultative) : un port série (<code>COM4</code>), une adresse IP (<code>192.168.1.42</code>) ou un nom réseau (<code>chili-a1b2c3.local</code>). Sans cible, la carte USB est détectée seule.</p>
+
+      <h3 id="cmd-pc">Sur le PC (sans carte)</h3>
+      <h4><code>chili check</code> — vérifier</h4>
+      <pre class="sh">chili check blink.chl</pre>
+      <pre class="out">ok</pre>
+      <p>En cas d'erreur : <code>blink.chl:7:5: 'ledd' n'est pas déclaré</code> (voir <a href="#lg-erreurs">erreurs fréquentes</a>).</p>
+
+      <h4><code>chili build</code> — compiler en bytecode</h4>
+      <pre class="sh">chili build blink.chl</pre>
+      <pre class="out">blink.chl → blink.chlb (111 octets)</pre>
+      <p>Inutile d'habitude : <code>push</code> compile tout seul. Autre nom de sortie : <code>chili build blink.chl -o clignote.chlb</code>.</p>
+
+      <h4><code>chili dis</code> — afficher le bytecode</h4>
+      <pre class="sh">chili dis blink.chl</pre>
+      <pre class="out">; 2 globale(s), 2 fonction(s), entrée = &lt;init&gt;, 75 octets de code
+
+fn main  ; params=0 locals=0 max_stack=2
+  0000  GLOAD       0
+  0003  PUSH8       1
+  0005  CALL_NATIVE gpio.mode/2
+  ...</pre>
+
+      <h4><code>chili run</code> — exécuter sur le PC</h4>
+      <pre class="sh">chili run fib.chl</pre>
+      <pre class="out">0
+1
+1
+2
+...
+75025
+58</pre>
+      <p>Les broches sont simulées (<code>[gpio] broche 2 = 1</code>). <strong>Ctrl+C</strong> pour arrêter.</p>
+
+      <h3 id="cmd-carte">Avec la carte</h3>
+      <h4><code>chili check-port</code> — détecter et diagnostiquer</h4>
+      <pre class="sh">chili check-port</pre>
+      <pre class="out">Ports série :
+  COM4     WCH CH340 (1A86:7523)  &lt;- carte ESP32 probable
+
+COM4 :
+  Firmware Chili : 0.1.2 (bytecode v1)
+  Puce           : ESP32-D0WD-V3, 251 Ko de mémoire libre
+  WiFi           : non configuré (chili wifi &lt;réseau&gt; &lt;mot de passe&gt;)
+  Programme      : 111 octets (crc 5e0c1f3a)
+  État           : en cours d'exécution</pre>
+      <p>La commande à lancer en premier quand quelque chose ne va pas. Puce USB non reconnue : <code>chili check-port COM4</code> force l'examen du port.</p>
+
+      <h4><code>chili flash</code> — installer le firmware</h4>
+      <p>Une fois par carte, puis après chaque mise à jour de Chili. Environ 30 s, <strong>par USB uniquement</strong>. Plusieurs cartes : <code>chili flash COM5</code>. Voir <a href="#pp-flash">Premiers pas</a> pour la sortie et la manip BOOT / EN.</p>
+
+      <h4><code>chili push</code> — envoyer et lancer</h4>
+      <pre class="sh">chili push blink.chl</pre>
+      <pre class="out">Envoi de blink.chl (111 octets) vers COM4… ok (180 ms)
+Programme enregistré sur la carte et lancé. Il redémarrera tout seul à chaque mise sous tension.
+Sortie de la carte — Ctrl+C pour quitter (le programme continue de tourner).</pre>
+      <ul>
+        <li>Le nouveau programme remplace l'ancien. S'il contient une erreur, rien n'est envoyé.</li>
+        <li>Par WiFi : <code>chili push blink.chl 192.168.1.42</code>. Un <code>.chlb</code> s'envoie de la même façon.</li>
+      </ul>
+
+      <h4><code>chili monitor</code> — lire la sortie</h4>
+      <pre class="sh">chili monitor</pre>
+      <pre class="out">Sortie de la carte (COM4) — Ctrl+C pour quitter.
+
+1
+2
+[chili] la carte a redémarré</pre>
+      <div class="tbl"><table>
+        <tr><th>Message</th><th>Signification</th></tr>
+        <tr><td><code>[chili] la carte a redémarré</code></td><td>bouton EN, coupure de courant</td></tr>
+        <tr><td><code>[chili] programme terminé</code></td><td><code>main</code> s'est terminée</td></tr>
+        <tr><td><code>[chili] erreur : …</code></td><td>erreur d'exécution, programme arrêté</td></tr>
+        <tr><td><code>[chili] WiFi connecté : ip=… host=…</code></td><td>la carte a rejoint le WiFi</td></tr>
+      </table></div>
+
+      <h3 id="cmd-arret">stop, kill, start, erase</h3>
+      <div class="tbl"><table>
+        <tr><th>Commande</th><th>Effet</th><th>Au prochain démarrage</th></tr>
+        <tr><td><code>chili stop</code></td><td>pause, sorties éteintes</td><td>le programme <strong>repart</strong></td></tr>
+        <tr><td><code>chili kill</code></td><td>arrêt, sorties éteintes</td><td>le programme <strong>ne repart pas</strong> (jusqu'à <code>start</code> ou <code>push</code>)</td></tr>
+        <tr><td><code>chili start</code></td><td>relance le programme stocké depuis le début</td><td>repart (lancement réactivé)</td></tr>
+        <tr><td><code>chili erase</code></td><td>efface le programme</td><td>rien ne tourne</td></tr>
+      </table></div>
+      <pre class="out">COM4 : programme en pause, sorties éteintes. Il repartira au prochain démarrage de la carte (ou avec « chili start »).
+COM4 : programme arrêté, sorties éteintes. Il ne se relancera plus au démarrage : « chili start » pour le relancer.
+COM4 : programme relancé (il se relancera aussi à chaque démarrage)
+COM4 : programme effacé</pre>
+
+      <h4><code>chili wifi</code> et <code>chili version</code></h4>
+      <ul>
+        <li><code>chili wifi &lt;réseau&gt; &lt;mot de passe&gt;</code> connecte la carte au WiFi, <code>chili wifi off</code> le coupe : voir <a href="#wifi">WiFi</a>.</li>
+        <li><code>chili version</code> affiche la version de l'outil, du firmware embarqué (celui que <code>flash</code> installe) et du format de bytecode.</li>
+        <li>Pour les curieux : <code>chili tokens</code> et <code>chili parse</code> montrent les étapes internes du compilateur.</li>
+      </ul>
+    </article>
+
+    <!-- ================================================================ -->
+    <article id="wifi">
+      <div class="kicker">Sans fil</div>
+      <h2>WiFi</h2>
+      <p class="lead">Une fois la carte sur ton WiFi, tu lui envoies tes programmes sans câble ; elle peut être alimentée par n'importe quel chargeur.</p>
+      <div class="note"><p>L'ESP32 ne fonctionne qu'en <strong>WiFi 2,4 GHz</strong> : il ne voit pas les réseaux 5 GHz. Le PC et la carte doivent être sur le même réseau (évite les réseaux « invités »).</p></div>
+
+      <h3>1. Connecter la carte (par USB, une fois)</h3>
+      <pre class="sh">chili wifi MaBox motdepasse</pre>
+      <pre class="out">COM4 : identifiants enregistrés, connexion à « MaBox »… ok
+  ip=192.168.1.42  host=chili-a1b2c3.local
+
+Tu peux maintenant envoyer sans câble :
+  chili push programme.chl 192.168.1.42</pre>
+      <p>Espaces ou caractères spéciaux (<code>$</code>, <code>&amp;</code>, <code>;</code>…) : mets-les entre apostrophes, <code>chili wifi 'Ma Box Maison' 'mon$ecret 2024'</code>.</p>
+      <p>La carte retient le réseau et s'y reconnecte à chaque démarrage. Son nom <code>chili-xxxxxx.local</code> vient de son adresse MAC et ne change jamais.</p>
+
+      <h3>2. Envoyer par WiFi</h3>
+      <pre class="sh">chili push blink.chl 192.168.1.42
+chili push blink.chl chili-a1b2c3.local
+chili monitor chili-a1b2c3.local
+chili stop 192.168.1.42</pre>
+      <p>Toutes les commandes de carte acceptent l'IP ou le nom. Seuls <code>flash</code> et <code>wifi</code> demandent le câble USB. L'IP peut changer après un redémarrage de la box ; le nom, non. Si Windows ne trouve pas le nom, utilise l'IP.</p>
+
+      <h3>Retrouver l'adresse, changer de réseau</h3>
+      <ul>
+        <li>Par USB, <code>chili check-port</code> affiche <code>WiFi : connecté, 192.168.1.42 (chili-a1b2c3.local)</code>.</li>
+        <li>Autre réseau : relance <code>chili wifi AutreBox autremotdepasse</code>. Couper : <code>chili wifi off</code>.</li>
+        <li>La carte écoute sur le port TCP 7070, une connexion WiFi à la fois.</li>
+      </ul>
+    </article>
+
+    <!-- ================================================================ -->
+    <article id="depannage">
+      <div class="kicker">Aide</div>
+      <h2>Dépannage</h2>
+      <p class="lead">Premier réflexe dans tous les cas : <code>chili check-port</code>. Elle dit ce qui est branché et quoi faire ensuite.</p>
+
+      <h3>« Aucun port série détecté »</h3>
+      <ol>
+        <li><strong>Change de câble</strong> : cause n° 1. Prends un câble qui transfère des fichiers.</li>
+        <li>Essaie un autre port USB du PC, sans hub.</li>
+        <li>Installe le pilote de la puce USB (<a href="#pp-pilote">CH340 ou CP210x</a>), débranche, rebranche.</li>
+        <li>Contrôle dans le Gestionnaire de périphériques (clic droit sur Démarrer) → Ports (COM et LPT) : un port doit apparaître quand tu branches la carte.</li>
+      </ol>
+
+      <h3>« Aucune carte ESP32 reconnue »</h3>
+      <p>Un port existe mais sa puce USB est inconnue. Force : <code>chili check-port COM3</code>, puis <code>chili flash COM3</code>.</p>
+
+      <h3>Port occupé</h3>
+      <pre class="out">  Port occupé : ferme les autres programmes qui l'utilisent (Arduino IDE, moniteur série…).</pre>
+      <p>Un seul programme à la fois par port. Ferme Arduino IDE, PlatformIO, Thonny, PuTTY, ou l'autre terminal où tourne <code>chili monitor</code> (Ctrl+C).</p>
+
+      <h3>« Aucune carte avec le firmware Chili n'a été trouvée en USB »</h3>
+      <ul>
+        <li><code>check-port</code> dit <code>Firmware Chili : absent</code> : lance <code>chili flash</code>.</li>
+        <li>Port occupé : voir ci-dessus.</li>
+        <li>La carte ne répond plus : appuie sur <strong>EN</strong> et réessaie.</li>
+      </ul>
+
+      <h3>Mode programmation : BOOT / EN</h3>
+      <p>Si la carte « ne passe pas en mode programmation automatiquement » :</p>
+      <ol>
+        <li>maintiens <strong>BOOT</strong> (parfois <strong>IO0</strong> ou <strong>FLASH</strong>) ;</li>
+        <li>appuie une fois sur <strong>EN</strong> (ou <strong>RST</strong>) ;</li>
+        <li>relâche <strong>BOOT</strong> ;</li>
+        <li>relance <code>chili flash</code>. Ensuite, appuie sur EN pour redémarrer normalement.</li>
+      </ol>
+
+      <h3>WiFi : « pas encore connecté »</h3>
+      <ol>
+        <li><strong>5 GHz</strong> : l'ESP32 ne voit que le <strong>2,4 GHz</strong>. Active-le dans ta box ou utilise son nom dédié.</li>
+        <li>Vérifie nom et mot de passe (majuscules, espaces ; apostrophes autour s'il y a des espaces).</li>
+        <li>Rapproche la carte de la box, puis <code>chili check-port</code> (<code>connexion en cours…</code> = patiente).</li>
+        <li><code>connexion impossible</code> avec un push par WiFi : l'IP a peut-être changé (<code>check-port</code> par USB), ou utilise l'IP plutôt que le nom <code>.local</code>.</li>
+      </ol>
+
+      <h3>Le programme s'arrête sur une erreur</h3>
+      <pre class="out">[chili] erreur : division par zero (fonction f0, pc 0008)</pre>
+      <p>Le programme a fait une opération impossible ; la carte fonctionne toujours. Lis le message (<a href="#lg-execution">liste des erreurs</a>), teste sur le PC avec <code>chili run</code>, corrige, puis <code>chili push</code>.</p>
+
+      <h3>Firmware à mettre à jour</h3>
+      <pre class="out">  Firmware Chili : 0.1.0 (bytecode v1)
+                   une autre version (0.1.2) est disponible : chili flash
+
+COM4 : le firmware de la carte ne connaît pas « kill ». Mets-le à jour avec : chili flash</pre>
+      <p>Après une mise à jour de Chili : <code>chili flash</code> par USB, puis renvoie ton programme.</p>
+
+      <h3>Autres cas</h3>
+      <ul>
+        <li><strong>La LED ne clignote pas</strong> : <code>check-port</code> doit dire <code>en cours d'exécution</code> (sinon <code>chili start</code>). Toutes les cartes n'ont pas de LED sur GPIO 2 : branche une LED externe. Patte longue côté broche.</li>
+        <li><strong>Rien dans <code>monitor</code></strong> : le programme n'appelle pas <code>print</code>, ou il est en pause (<code>chili start</code>).</li>
+        <li><strong>La carte redémarre en boucle</strong> : relance <code>chili flash</code> (avec BOOT / EN au besoin).</li>
+        <li><strong>Repartir de zéro</strong> : <code>chili erase</code> efface le programme ; <code>chili flash</code> réinstalle le firmware.</li>
+      </ul>
+    </article>
+  </main>
+</div>
+
+<footer>
+  <div class="wrap">
+    <img src="logo.svg" alt="">
+    <span>Chili — un langage open source pour microcontrôleurs.</span>
+    <a class="right" href="https://github.com/getchili">github.com/getchili</a>
+  </div>
+</footer>
+
+</body>
+</html>
