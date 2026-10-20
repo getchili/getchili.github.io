@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chili — le langage qui pimente ton ESP32</title>
+<meta name="description" content="Chili est un petit langage pour microcontrôleurs. Écris ton programme, envoie-le à ton ESP32 par USB ou WiFi en une commande, sans jamais reflasher la carte.">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0a09;
+    --bg-2: #171010;
+    --card: #1c1312;
+    --line: #2f211e;
+    --text: #f4ece6;
+    --muted: #b3a39b;
+    --red: #ff4d4d;
+    --red-2: #e5302a;
+    --orange: #ff9f1c;
+    --green: #5fd068;
+    --radius: 16px;
+    --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.6 Inter, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  h1, h2, h3 { font-family: "Space Grotesk", Inter, sans-serif; line-height: 1.15; margin: 0; }
+  code, pre { font-family: var(--mono); }
+
+  /* Navigation */
+  nav { position: sticky; top: 0; z-index: 10; background: rgba(15, 10, 9, .8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+  nav .wrap { display: flex; align-items: center; gap: 28px; height: 64px; }
+  .brand { display: flex; align-items: center; gap: 10px; font: 700 20px "Space Grotesk", sans-serif; text-decoration: none; }
+  .brand img { width: 32px; height: 32px; }
+  nav .links { margin-left: auto; display: flex; gap: 24px; font-size: 15px; }
+  nav .links a { color: var(--muted); text-decoration: none; }
+  nav .links a:hover { color: var(--text); }
+
+  /* Hero */
+  .hero { position: relative; overflow: hidden; padding: 88px 0 72px; }
+  .hero::before {
+    content: ""; position: absolute; inset: -40% -10% auto auto; width: 720px; height: 720px;
+    background: radial-gradient(circle, rgba(229, 48, 42, .28), transparent 65%); pointer-events: none;
+  }
+  .hero .wrap { display: grid; grid-template-columns: 1.05fr 1fr; gap: 56px; align-items: center; position: relative; }
+  .hero .wrap > *, .lang > *, .grid > *, .steps > * { min-width: 0; } /* les blocs de code défilent au lieu d'élargir la grille */
+  .badge { display: inline-flex; gap: 8px; align-items: center; padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: 13px; background: var(--bg-2); }
+  .badge b { color: var(--green); font-weight: 600; }
+  .hero h1 { font-size: clamp(40px, 6vw, 64px); margin: 20px 0; letter-spacing: -1.5px; }
+  .hero h1 em { font-style: normal; background: linear-gradient(90deg, var(--red), var(--orange)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero p.lead { font-size: 19px; color: var(--muted); max-width: 520px; margin: 0 0 32px; }
+  .cta { display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; gap: 10px; padding: 13px 22px; border-radius: 12px; font-weight: 600; text-decoration: none; transition: transform .15s, box-shadow .15s; }
+  .btn:hover { transform: translateY(-2px); }
+  .btn.primary { background: linear-gradient(135deg, var(--red), var(--red-2)); color: #fff; box-shadow: 0 10px 30px rgba(229, 48, 42, .35); }
+  .btn.ghost { border: 1px solid var(--line); background: var(--bg-2); }
+  .btn svg { width: 18px; height: 18px; }
+
+  /* Code */
+  .window { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 30px 60px rgba(0, 0, 0, .45); overflow: hidden; }
+  .window + .window { margin-top: 18px; }
+  .window .bar { display: flex; align-items: center; gap: 7px; padding: 12px 16px; border-bottom: 1px solid var(--line); color: var(--muted); font: 13px var(--mono); }
+  .window .bar i { width: 11px; height: 11px; border-radius: 50%; background: #3a2a27; }
+  .window .bar span { margin-left: 8px; }
+  pre { margin: 0; padding: 18px 20px; font-size: 14px; line-height: 1.7; overflow-x: auto; }
+  .kc { color: #ff4d4d; font-weight: 600; }          /* if / while */
+  .kf { color: #ff7a59; font-weight: 600; font-style: italic; } /* return… */
+  .fn { color: #ff9f1c; font-weight: 600; }          /* fn */
+  .lt { color: #ffb86b; font-style: italic; }        /* let */
+  .nm { color: #ffd23f; font-weight: 600; }          /* nom de fonction */
+  .mod { color: #5fd068; font-weight: 600; }         /* gpio */
+  .nat { color: #a8e6a1; }                           /* .write */
+  .bi { color: #5fd068; font-style: italic; }        /* delay, print */
+  .num { color: #f15bb5; }
+  .bool { color: #c77dff; font-weight: 600; }
+  .cm { color: #7f9172; font-style: italic; }
+  .op { color: #ff8c69; }
+  .ps { color: #5fd068; }                            /* invite terminal */
+  .dim { color: var(--muted); }
+  .ok { color: var(--green); }
+
+  /* Sections */
+  section { padding: 88px 0; border-top: 1px solid var(--line); }
+  .kicker { color: var(--red); font: 600 13px var(--mono); letter-spacing: 1.5px; text-transform: uppercase; }
+  section h2 { font-size: clamp(30px, 4vw, 42px); margin: 10px 0 14px; letter-spacing: -.8px; }
+  section p.sub { color: var(--muted); max-width: 620px; margin: 0 0 44px; font-size: 17px; }
+
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; }
+  .card .ic { width: 42px; height: 42px; border-radius: 11px; display: grid; place-items: center; font-size: 21px; background: rgba(255, 77, 77, .12); margin-bottom: 16px; }
+  .card h3 { font-size: 18px; margin-bottom: 8px; }
+  .card p { margin: 0; color: var(--muted); font-size: 15px; }
+
+  /* Étapes */
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; counter-reset: step; }
+  .step { position: relative; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; }
+  .step::before { counter-increment: step; content: counter(step); display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--red), var(--red-2)); font: 700 16px "Space Grotesk", sans-serif; margin-bottom: 14px; }
+  .step h3 { font-size: 17px; margin-bottom: 6px; }
+  .step p { color: var(--muted); font-size: 14.5px; margin: 0 0 14px; }
+  .step code.cmd { display: block; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 13.5px; color: var(--text); overflow-x: auto; white-space: nowrap; }
+
+  /* Pipeline */
+  .pipe { display: flex; align-items: stretch; gap: 0; flex-wrap: wrap; }
+  .pipe .node { flex: 1; min-width: 170px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
+  .pipe .node b { display: block; font: 600 15px var(--mono); color: var(--orange); margin-bottom: 6px; }
+  .pipe .node span { color: var(--muted); font-size: 14px; }
+  .pipe .arrow { display: grid; place-items: center; width: 44px; color: var(--red); font-size: 22px; }
+
+  /* Langage */
+  .lang { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .lang .window { margin: 0; box-shadow: none; }
+  .lang h3 { font-size: 15px; font-family: Inter, sans-serif; font-weight: 600; color: var(--muted); padding: 14px 20px 0; }
+
+  footer { border-top: 1px solid var(--line); padding: 36px 0; color: var(--muted); font-size: 14px; }
+  footer .wrap { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  footer img { width: 24px; height: 24px; }
+  footer .right { margin-left: auto; }
+
+  @media (max-width: 960px) {
+    .hero .wrap { grid-template-columns: 1fr; }
+    .grid, .steps { grid-template-columns: repeat(2, 1fr); }
+    .lang { grid-template-columns: 1fr; }
+    .pipe .arrow { width: 100%; height: 36px; transform: rotate(90deg); }
+  }
+  @media (max-width: 600px) {
+    .wrap { padding: 0 16px; }
+    nav .links a.hide-sm { display: none; }
+    nav .wrap { gap: 16px; }
+    nav .links { gap: 16px; }
+  }
+  @media (max-width: 360px) {
+    nav .links a:first-child { display: none; }
+    .grid, .steps { grid-template-columns: 1fr; }
+    .hero { padding: 56px 0; }
+    section { padding: 64px 0; }
+    pre { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#"><img src="logo.svg" alt="">Chili</a>
+    <div class="links">
+      <a href="#demarrer">Démarrer</a>
+      <a class="hide-sm" href="#langage">Langage</a>
+      <a class="hide-sm" href="#fonctionnement">Fonctionnement</a>
+      <a href="https://github.com/getchili">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div>
+      <span class="badge"><b>●</b> v0.1 — ESP32</span>
+      <h1>Le langage qui <em>pimente</em> ton ESP32.</h1>
+      <p class="lead">Chili est un petit langage pour microcontrôleurs. Écris ton programme, envoie-le à la carte par USB ou WiFi en une commande. Pas d'IDE, pas de reflash, pas d'attente.</p>
+      <div class="cta">
+        <a class="btn primary" href="https://github.com/getchili/chili/releases/latest">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 21h16"/></svg>
+          Télécharger chili.exe
+        </a>
+        <a class="btn ghost" href="https://github.com/getchili">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
+          Voir sur GitHub
+        </a>
+      </div>
+    </div>
+
+    <div>
+      <div class="window">
+        <div class="bar"><i></i><i></i><i></i><span>blink.chl</span></div>
+<pre><span class="cm">// fait clignoter la LED de la carte</span>
+<span class="lt">let</span> led <span class="op">=</span> <span class="num">2</span>
+
+<span class="fn">fn</span> <span class="nm">main</span>() {
+    <span class="mod">gpio</span>.<span class="nat">mode</span>(led, <span class="num">1</span>)
+    <span class="kc">while</span> <span class="bool">true</span> {
+        <span class="mod">gpio</span>.<span class="nat">write</span>(led, <span class="num">1</span>)
+        <span class="bi">delay</span>(<span class="num">500</span>)
+        <span class="mod">gpio</span>.<span class="nat">write</span>(led, <span class="num">0</span>)
+        <span class="bi">delay</span>(<span class="num">500</span>)
+    }
+}</pre>
+      </div>
+      <div class="window">
+        <div class="bar"><i></i><i></i><i></i><span>terminal</span></div>
+<pre><span class="ps">&gt;</span> chili push blink.chl
+<span class="dim">Envoi de blink.chl (111 octets) vers COM5…</span> <span class="ok">ok (0.2 s)</span>
+<span class="dim">Programme enregistré sur la carte et lancé.</span></pre>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="kicker">Pourquoi Chili</div>
+    <h2>Tout tient dans un seul outil.</h2>
+    <p class="sub">Un exécutable, une carte, un câble. Chili s'occupe de détecter la carte, d'installer son firmware et d'y envoyer tes programmes.</p>
+    <div class="grid">
+      <div class="card"><div class="ic">⚡</div><h3>Envoi instantané</h3><p>Le firmware est installé une seule fois. Ensuite, chaque programme part en une fraction de seconde, sans recompiler le firmware.</p></div>
+      <div class="card"><div class="ic">📡</div><h3>Avec ou sans fil</h3><p>Par USB, ou par WiFi une fois la carte connectée au réseau : <code>chili push blink.chl 192.168.1.42</code>.</p></div>
+      <div class="card"><div class="ic">🪶</div><h3>Ultra léger</h3><p>Une VM en C d'environ 8 Ko de RAM, sans allocation dynamique. Le gros du travail est fait par le compilateur, sur ton PC.</p></div>
+      <div class="card"><div class="ic">🛡️</div><h3>Sûr par défaut</h3><p>Le bytecode est vérifié avant d'être lancé. Une division par zéro arrête le programme proprement, sans planter la carte.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="demarrer">
+  <div class="wrap">
+    <div class="kicker">Démarrer</div>
+    <h2>De la boîte à la LED qui clignote.</h2>
+    <p class="sub">Il te faut un ESP32, un câble USB de données et Windows. Rien d'autre à installer.</p>
+    <div class="steps">
+      <div class="step"><h3>Télécharge Chili</h3><p>Récupère <b>chili.exe</b> sur la page des versions et place-le dans un dossier de travail.</p><code class="cmd">chili.exe</code></div>
+      <div class="step"><h3>Branche la carte</h3><p>Chili la détecte et t'affiche le modèle de puce, son état et la marche à suivre.</p><code class="cmd">chili check-port</code></div>
+      <div class="step"><h3>Installe le firmware</h3><p>Une seule fois par carte, environ 30 secondes. Le firmware est inclus dans chili.exe.</p><code class="cmd">chili flash</code></div>
+      <div class="step"><h3>Envoie ton code</h3><p>Le programme est compilé, envoyé, lancé, et il redémarre tout seul à chaque mise sous tension.</p><code class="cmd">chili push blink.chl</code></div>
+    </div>
+  </div>
+</section>
+
+<section id="langage">
+  <div class="wrap">
+    <div class="kicker">Le langage</div>
+    <h2>Simple à lire, rapide à écrire.</h2>
+    <p class="sub">Une syntaxe à accolades sans points-virgules, des entiers 32 bits, des fonctions et des boucles. Juste ce qu'il faut pour piloter du matériel.</p>
+    <div class="lang">
+      <div class="window"><h3>Fonctions et récursion</h3>
+<pre><span class="fn">fn</span> <span class="nm">fib</span>(n) {
+    <span class="kc">if</span> n <span class="op">&lt;</span> <span class="num">2</span> {
+        <span class="kf">return</span> n
+    }
+    <span class="kf">return</span> fib(n <span class="op">-</span> <span class="num">1</span>) <span class="op">+</span> fib(n <span class="op">-</span> <span class="num">2</span>)
+}</pre></div>
+      <div class="window"><h3>Boucles et conditions</h3>
+<pre><span class="lt">let</span> total <span class="op">=</span> <span class="num">0</span>
+<span class="lt">let</span> i <span class="op">=</span> <span class="num">0</span>
+<span class="kc">while</span> i <span class="op">&lt;</span> <span class="num">10</span> {
+    i <span class="op">+=</span> <span class="num">1</span>
+    <span class="kc">if</span> i <span class="op">%</span> <span class="num">2</span> <span class="op">==</span> <span class="num">0</span> { <span class="kf">continue</span> }
+    total <span class="op">+=</span> i
+}</pre></div>
+      <div class="window"><h3>Matériel</h3>
+<pre><span class="mod">gpio</span>.<span class="nat">mode</span>(<span class="num">4</span>, <span class="num">2</span>)  <span class="cm">// bouton</span>
+<span class="kc">if</span> <span class="mod">gpio</span>.<span class="nat">read</span>(<span class="num">4</span>) <span class="op">==</span> <span class="num">0</span> {
+    <span class="bi">print</span>(<span class="bi">millis</span>())
+}
+<span class="cm">// masques en hexa ou binaire</span>
+<span class="lt">let</span> m <span class="op">=</span> <span class="num">0xFF</span> <span class="op">&amp;</span> <span class="num">0b1010</span></pre></div>
+    </div>
+  </div>
+</section>
+
+<section id="fonctionnement">
+  <div class="wrap">
+    <div class="kicker">Fonctionnement</div>
+    <h2>Compilé sur ton PC, exécuté sur la carte.</h2>
+    <p class="sub">Le compilateur (en Go) transforme ton code en bytecode compact. La carte n'a qu'à l'exécuter : c'est ce qui rend Chili léger et rapide à envoyer.</p>
+    <div class="pipe">
+      <div class="node"><b>blink.chl</b><span>Ton programme, en texte.</span></div>
+      <div class="arrow">→</div>
+      <div class="node"><b>chili</b><span>Analyse, vérifie et compile sur le PC.</span></div>
+      <div class="arrow">→</div>
+      <div class="node"><b>blink.chlb</b><span>Bytecode de quelques centaines d'octets, protégé par CRC.</span></div>
+      <div class="arrow">→</div>
+      <div class="node"><b>VM ESP32</b><span>Reçu par USB ou WiFi, vérifié, puis exécuté.</span></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <img src="logo.svg" alt="">
+    <span>Chili — un langage open source pour microcontrôleurs.</span>
+    <a class="right" href="https://github.com/getchili">github.com/getchili</a>
+  </div>
+</footer>
+
+</body>
+</html>
