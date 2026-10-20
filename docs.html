@@ -347,18 +347,29 @@ Sortie de la carte — Ctrl+C pour quitter (le programme continue de tourner).</
       </ol>
 
       <h3 id="pp-exemples">Les exemples fournis</h3>
+      <p>Un exemple par notion. Ceux marqués <strong>PC</strong> se testent sans carte avec <code>chili run</code> ; les autres utilisent la LED ou le bouton de la carte.</p>
       <div class="tbl"><table>
-        <tr><th>Fichier</th><th>Ce qu'il fait</th></tr>
-        <tr><td><code>blink.chl</code></td><td>fait clignoter la LED (GPIO 2)</td></tr>
-        <tr><td><code>bouton.chl</code></td><td>allume la LED tant qu'on appuie sur le bouton <strong>BOOT</strong> (GPIO 0)</td></tr>
-        <tr><td><code>compteur.chl</code></td><td>compte les appuis sur BOOT et affiche le total avec <code>print</code></td></tr>
-        <tr><td><code>sos.chl</code></td><td>« SOS » en morse sur la LED, découpé en fonctions</td></tr>
-        <tr><td><code>morse.chl</code></td><td>n'importe quel message en morse, avec du <a href="#textes">texte, un tableau et for</a></td></tr>
-        <tr><td><code>de.chl</code></td><td>dé électronique : un appui sur BOOT, la LED clignote de 1 à 6 fois (<code>random</code>)</td></tr>
-        <tr><td><code>motifs.chl</code></td><td>motifs de clignotement tirés au hasard, écrits avec des <a href="#classes">classes</a></td></tr>
-        <tr><td><code>fib.chl</code></td><td>suite de Fibonacci et mesure du temps de calcul</td></tr>
+        <tr><th>Fichier</th><th>Ce qu'il montre</th></tr>
+        <tr><td colspan="2"><strong>La carte</strong></td></tr>
+        <tr><td><code>blink.chl</code></td><td>faire clignoter la LED : <code>gpio.mode</code>, <code>gpio.write</code>, <code>delay</code></td></tr>
+        <tr><td><code>bouton.chl</code></td><td>lire le bouton <strong>BOOT</strong> : <code>gpio.read</code>, entrée avec pull-up</td></tr>
+        <tr><td><code>compteur.chl</code></td><td>compter les appuis sur BOOT (détecter un appui, éviter les rebonds)</td></tr>
+        <tr><td><code>chrono.chl</code></td><td>plusieurs choses à des rythmes différents avec <code>millis()</code></td></tr>
+        <tr><td><code>de.chl</code></td><td>dé électronique : <code>random</code>, la LED clignote de 1 à 6 fois</td></tr>
+        <tr><td colspan="2"><strong>Le langage</strong></td></tr>
+        <tr><td><code>calculs.chl</code></td><td><strong>PC</strong> — variables, nombres, opérateurs, débordement</td></tr>
+        <tr><td><code>conditions.chl</code></td><td><strong>PC</strong> — <code>if</code> / <code>else</code>, comparaisons, <code>&amp;&amp;</code> <code>||</code> <code>!</code></td></tr>
+        <tr><td><code>boucles.chl</code></td><td><strong>PC</strong> — <code>while</code>, <code>for</code>, <code>break</code>, <code>continue</code></td></tr>
+        <tr><td><code>fonctions.chl</code></td><td><strong>PC</strong> — paramètres, <code>return</code>, récursion, mesure du temps</td></tr>
+        <tr><td><code>textes.chl</code></td><td><strong>PC</strong> — <a href="#tx-texte">texte</a> : <code>+</code>, <code>len</code>, <code>str.sub</code>, <code>str.find</code>…</td></tr>
+        <tr><td><code>tableaux.chl</code></td><td><strong>PC</strong> — <a href="#tx-tableaux">tableaux</a> : <code>[…]</code>, <code>array</code>, grilles</td></tr>
+        <tr><td><code>classes.chl</code></td><td>une <a href="#classes">classe</a> <code>Led</code> : champs, constructeur, méthodes, objets</td></tr>
+        <tr><td><code>motifs.chl</code></td><td>héritage et classes abstraites : motifs de clignotement tirés au hasard</td></tr>
+        <tr><td colspan="2"><strong>Petits projets</strong></td></tr>
+        <tr><td><code>morse.chl</code></td><td>un message en morse sur la LED (texte + tableaux + <code>for</code>)</td></tr>
+        <tr><td><code>password.chl</code></td><td><strong>PC</strong> — génère un mot de passe au hasard (<code>random</code>, <code>printc</code>)</td></tr>
       </table></div>
-      <p>Essaie <code>chili push compteur.chl</code> puis appuie sur BOOT : <code>1</code>, <code>2</code>, <code>3</code>… s'affichent.</p>
+      <p>Essaie <code>chili push compteur.chl</code> puis appuie sur BOOT : <code>appuis : 1</code>, <code>appuis : 2</code>… s'affichent.</p>
     </article>
 
     <!-- ================================================================ -->
@@ -966,7 +977,7 @@ vitesse <span class="op">+=</span> <span class="num">10</span>   <span class="cm
 <pre><span class="lt">let</span> etat <span class="op">=</span> <span class="mod">gpio</span>.<span class="nat">read</span>(bouton)
 <span class="kc">if</span> avant <span class="op">==</span> <span class="num">1</span> <span class="op">&amp;&amp;</span> etat <span class="op">==</span> <span class="num">0</span> {   <span class="cm">// passage relâché → appuyé</span>
     appuis <span class="op">+=</span> <span class="num">1</span>
-    <span class="bi">print</span>(appuis)
+    <span class="bi">print</span>(<span class="str">"appuis : "</span> <span class="op">+</span> appuis)
 }
 avant <span class="op">=</span> etat
 <span class="bi">delay</span>(<span class="num">20</span>)   <span class="cm">// évite de compter les rebonds du bouton</span></pre>
@@ -1005,14 +1016,13 @@ function Main.main  ; params=1 locals=1 max_stack=2
   ...</pre>
 
       <h4><code>chili run</code> — exécuter sur le PC</h4>
-      <pre class="sh">chili run fib.chl</pre>
-      <pre class="out">0
-1
-1
-2
+      <pre class="sh">chili run fonctions.chl</pre>
+      <pre class="out">49
+15
+Bonjour Chili
+42
 ...
-75025
-60</pre>
+fib(20) = 6765 en 7 ms</pre>
       <p>Les broches sont simulées (<code>[gpio] broche 2 = 1</code>). <strong>Ctrl+C</strong> pour arrêter.</p>
 
       <h3 id="cmd-carte">Avec la carte</h3>
